@@ -867,3 +867,33 @@
   line-height: 1.5;
 }
 
+/* AI Code Review Layout & Findings */
+.review-results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.issue-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.issue-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.severity-pill {
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.clean-issues-banner {
+  animation: fadeIn 0.3s ease-out;
+}
+
+#improved-code-display code {
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+}
+

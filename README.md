@@ -29,6 +29,14 @@
 - **Frontend Code Explainer**: Interactive developer UI featuring syntax-tailored code editor, multi-language selector, instant sample snippets, skeleton loading, Big-O complexity badges, and error handling.
 - **Documentation**: In-depth guide in `docs/day-2-ai-engine.md`.
 
+### Day 3: AI Code Review & Bug Detection Engine
+- **Backend Review Endpoint**: Exposed `POST /api/v1/ai/review` returning executive summary, overall risk level, structured issues list with severity and line numbers, and hardened improved code.
+- **Service Refactoring**: Extracted shared `_generate_json` client method in `OllamaService` handling HTTP connection errors, timeouts, and resilient JSON fence sanitization for both `/explain` and `/review`.
+- **Defensive Line & Risk Validation**: Bounded line number validation against submitted code line counts, severity level normalization, and risk clamping.
+- **Frontend Code Review Feature**: Created `src/features/code-review/` featuring code editor, language selector, curated test presets (division by zero, unchecked index, null dereference, clean code), severity pills, line badges, and a "Copy Improved Code" button.
+- **Navigation Integration**: Tabbed multi-view navigation across AI Code Review, AI Code Explainer, and System Dashboard.
+- **Documentation**: Comprehensive architectural guide, trade-off analysis, and interview preparation in `docs/day-3-code-review.md`.
+
 ---
 
 ## 📁 Repository Structure
@@ -38,14 +46,15 @@ ai-developer-copilot/
 ├── backend/
 │   ├── app/
 │   │   ├── core/                # Configuration & settings (Ollama URL, model, limits)
-│   │   ├── routers/             # Feature routers (/api/v1/ai/explain)
+│   │   ├── routers/             # Feature routers (/explain, /review)
 │   │   ├── schemas/             # Pydantic v2 request/response schemas
-│   │   ├── services/            # Ollama async HTTP client & JSON sanitization
+│   │   ├── services/            # Ollama shared async HTTP client & JSON sanitization
 │   │   ├── __init__.py
 │   │   └── main.py              # FastAPI application & endpoints
 │   ├── tests/
 │   │   ├── __init__.py
-│   │   ├── test_ai_router.py    # Mocked AI endpoint, timeout, and security tests
+│   │   ├── test_ai_review.py    # Mocked review edge cases, bounds, and security tests
+│   │   ├── test_ai_router.py    # Mocked explain endpoint, timeout, and security tests
 │   │   └── test_main.py         # Pytest test suite for welcome, health & CORS
 │   ├── .venv/                   # Isolated Python virtual environment
 │   ├── pytest.ini               # Pytest configuration
@@ -56,10 +65,11 @@ ai-developer-copilot/
 │   │   │   └── providers/       # QueryProvider & queryClient
 │   │   ├── components/
 │   │   │   ├── common/          # ErrorBanner
-│   │   │   ├── layout/          # Header with view switcher, Footer
+│   │   │   ├── layout/          # Header with 3-way view switcher, Footer
 │   │   │   └── ui/              # Button, Card, StatusPill, JsonInspector
 │   │   ├── features/
 │   │   │   ├── code-explainer/  # Day 2 AI Code Explainer feature & tests
+│   │   │   ├── code-review/     # Day 3 AI Code Review & Bug Detection feature & tests
 │   │   │   └── dashboard/       # Day 1 Telemetry Dashboard & tests
 │   │   ├── hooks/
 │   │   │   └── api/             # Generic CRUD hooks (useFetchQuery, useCreateQuery, etc.)
@@ -68,8 +78,15 @@ ai-developer-copilot/
 │   │   ├── types/               # TypeScript schemas (ai.ts, api.ts, health.ts)
 │   │   ├── utils/               # Formatters
 │   │   ├── App.tsx              # Root component mounting QueryProvider
-│   │   ├── App.css              # Dashboard and code explainer styles
+│   │   ├── App.css              # Dashboard, explainer, and code review styles
 │   │   ├── index.css            # Obsidian design tokens
+│   │   └── main.tsx             # React root mount
+│   ├── index.html               # HTML template & typography
+│   ├── package.json             # Frontend dependencies & scripts
+│   ├── tsconfig.json            # TypeScript configuration
+│   ├── vite.config.ts           # Vite & Vitest configuration
+│   ├── .env                     # Environment variables (VITE_API_BASE_URL)
+│   └�```dian design tokens
 │   │   └── main.tsx             # React root mount
 │   ├── index.html               # HTML template & typography
 │   ├── package.json             # Frontend dependencies & scripts

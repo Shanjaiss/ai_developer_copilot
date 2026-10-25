@@ -1,5 +1,10 @@
 from fastapi import APIRouter, Depends, status
-from app.schemas.ai import ExplainCodeRequest, ExplainCodeResponse
+from app.schemas.ai import (
+    ExplainCodeRequest,
+    ExplainCodeResponse,
+    ReviewCodeRequest,
+    ReviewCodeResponse,
+)
 from app.services.ollama_service import OllamaService, ollama_service
 
 router = APIRouter(prefix="/ai", tags=["AI Code Engine"])
@@ -26,3 +31,22 @@ async def explain_code(
     Never executes the submitted code.
     """
     return await service.explain_code(code=payload.code, language=payload.language)
+
+
+@router.post(
+    "/review",
+    response_model=ReviewCodeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Review code and detect bugs with local AI",
+    description="Analyzes submitted source code for correctness, security, performance, and maintainability concerns.",
+)
+async def review_code(
+    payload: ReviewCodeRequest,
+    service: OllamaService = Depends(get_ollama_service),
+) -> ReviewCodeResponse:
+    """
+    Endpoint for AI code review and bug detection.
+    Never executes the submitted code.
+    """
+    return await service.review_code(code=payload.code, language=payload.language)
+

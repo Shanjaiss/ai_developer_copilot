@@ -1,3 +1,17 @@
-from .ai import ExplainCodeRequest, ExplainCodeResponse
+from .ai import (
+    BaseCodeRequest,
+    ExplainCodeRequest,
+    ExplainCodeResponse,
+    ReviewCodeRequest,
+    ReviewCodeResponse,
+    ReviewIssue,
+)
 
-__all__ = ["ExplainCodeRequest", "ExplainCodeResponse"]
+__all__ = [
+    "BaseCodeRequest",
+    "ExplainCodeRequest",
+    "ExplainCodeResponse",
+    "ReviewCodeRequest",
+    "ReviewCodeResponse",
+    "ReviewIssue",
+]

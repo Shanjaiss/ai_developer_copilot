@@ -10,6 +10,7 @@ import { TelemetryDiagnostics } from './components/TelemetryDiagnostics';
 import { ApiContractVerifier } from './components/ApiContractVerifier';
 import { TechStackMatrix } from './components/TechStackMatrix';
 import { CodeExplainerView } from '../code-explainer/CodeExplainerView';
+import { CodeReviewView } from '../code-review/CodeReviewView';
 import type { ConnectionStatus, HealthResponse, WelcomeResponse } from '../../types';
 
 export interface DashboardViewProps {
@@ -96,6 +97,8 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
       {/* Conditional View Rendering */}
       {activeView === 'explainer' ? (
         <CodeExplainerView />
+      ) : activeView === 'review' ? (
+        <CodeReviewView />
       ) : (
         <>
           {/* Hero Project Banner */}

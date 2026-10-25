@@ -109,4 +109,37 @@ describe('DashboardView Feature Integration', () => {
       expect(healthFetchCount).toBeGreaterThan(initialCount);
     });
   });
+
+  it('switches between views using navigation tabs', async () => {
+    vi.spyOn(apiClient, 'get').mockResolvedValue({
+      data: { status: 'healthy', service: 'ai-copilot', environment: 'development', version: '0.1.0' },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {} as any,
+    });
+
+    renderWithClient(<DashboardView initialView="dashboard" />);
+
+    // Click AI Code Review tab
+    const reviewTab = screen.getByRole('tab', { name: /AI Code Review/i });
+    fireEvent.click(reviewTab);
+
+    // Code Review feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Local LLM Heuristic Code Review/i })).toBeInTheDocument();
+
+    // Click AI Code Explainer tab
+    const explainerTab = screen.getByRole('tab', { name: /AI Code Explainer/i });
+    fireEvent.click(explainerTab);
+
+    // Code Explainer feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Local LLM Code Analysis/i })).toBeInTheDocument();
+
+    // Click back to System Dashboard tab
+    const dashboardTab = screen.getByRole('tab', { name: /System Dashboard/i });
+    fireEvent.click(dashboardTab);
+
+    // Dashboard Telemetry heading should be back
+    expect(screen.getByText(/Backend Telemetry & Diagnostics/i)).toBeInTheDocument();
+  });
 });
