@@ -12,6 +12,7 @@ import { TechStackMatrix } from './components/TechStackMatrix';
 import { CodeExplainerView } from '../code-explainer/CodeExplainerView';
 import { CodeReviewView } from '../code-review/CodeReviewView';
 import { CodeOptimizerView } from '../code-optimizer/CodeOptimizerView';
+import { TestGeneratorView } from '../test-generator/TestGeneratorView';
 import type { ConnectionStatus, HealthResponse, WelcomeResponse } from '../../types';
 
 export interface DashboardViewProps {
@@ -96,7 +97,9 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
       )}
 
       {/* Conditional View Rendering */}
-      {activeView === 'optimizer' ? (
+      {activeView === 'test-generator' ? (
+        <TestGeneratorView />
+      ) : activeView === 'optimizer' ? (
         <CodeOptimizerView />
       ) : activeView === 'review' ? (
         <CodeReviewView />

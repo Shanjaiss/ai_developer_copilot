@@ -121,6 +121,13 @@ describe('DashboardView Feature Integration', () => {
 
     renderWithClient(<DashboardView initialView="dashboard" />);
 
+    // Click AI Test Generator tab
+    const testGenTab = screen.getByRole('tab', { name: /AI Test Generator/i });
+    fireEvent.click(testGenTab);
+
+    // AI Unit Test Generator feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Automated Behavior & Edge-Case Unit Test Generation/i })).toBeInTheDocument();
+
     // Click AI Code Optimizer tab
     const optimizerTab = screen.getByRole('tab', { name: /AI Code Optimizer/i });
     fireEvent.click(optimizerTab);

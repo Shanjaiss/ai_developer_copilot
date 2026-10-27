@@ -88,4 +88,35 @@ export interface OptimizeCodeResponse {
   warnings: string[];
 }
 
+export type TestFramework = 'pytest' | 'vitest';
+export type TestFocus = 'basic' | 'edge_cases' | 'error_handling' | 'comprehensive';
+export type TestCaseCategory = 'normal' | 'edge_case' | 'error_handling' | 'boundary' | 'other';
+
+export interface GeneratedTestCase {
+  name: string;
+  category: string;
+  description: string;
+  expected_behavior: string;
+}
+
+export interface GenerateTestsRequest {
+  code: string;
+  language: string;
+  framework: TestFramework;
+  test_focus?: TestFocus;
+}
+
+export interface GenerateTestsResponse {
+  summary: string;
+  language: string;
+  framework: string;
+  test_focus: string;
+  generated_test_code: string;
+  test_cases: GeneratedTestCase[];
+  coverage_notes: string[];
+  assumptions: string[];
+  warnings: string[];
+}
+
+
 

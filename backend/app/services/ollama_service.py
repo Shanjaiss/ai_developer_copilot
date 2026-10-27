@@ -12,6 +12,8 @@ from app.core.config import settings
 from app.schemas.ai import (
     ComplexityMetrics,
     ExplainCodeResponse,
+    GeneratedTestCase,
+    GenerateTestsResponse,
     OptimizationChange,
     OptimizeCodeResponse,
     ReviewCodeResponse,
@@ -519,7 +521,194 @@ class OllamaService:
             warnings=warnings,
         )
 
+    # -------------------------------------------------------------------------
+    # Unit Test Generator Feature (Phase 5)
+    # -------------------------------------------------------------------------
+
+    def build_test_generation_prompt(
+        self,
+        code: str,
+        language: str,
+        framework: str,
+        test_focus: str,
+    ) -> str:
+        """
+        Constructs a structured prompt for the AI unit test generation engine.
+        Guides the model to generate framework-compliant, isolated, behavior-preserving unit tests.
+        Treats submitted code strictly as inert untrusted text.
+        """
+        focus_guidelines = {
+            "basic": "Focus on standard positive cases, typical inputs, and expected return values.",
+            "edge_cases": "Focus on boundary conditions, empty collections, zero values, negative numbers, and boundary limits.",
+            "error_handling": "Focus on invalid inputs, missing arguments, type mismatches, and expected exceptions/errors.",
+            "comprehensive": "Provide thorough coverage spanning standard happy paths, boundary edge cases, and error/exception paths.",
+        }
+        focus_instruction = focus_guidelines.get(test_focus, focus_guidelines["comprehensive"])
+
+        framework_instructions = {
+            "pytest": (
+                "- Target testing framework: pytest.\n"
+                "- Use idiomatic Python test structure: `import pytest`, `def test_<scenario>():`, and standard `assert` statements.\n"
+                "- If testing exceptions, use `with pytest.raises(<ExceptionType>):`.\n"
+                "- Do NOT invent non-existent packages or methods."
+            ),
+            "vitest": (
+                "- Target testing framework: Vitest.\n"
+                "- Use idiomatic JavaScript/TypeScript test structure: `import { describe, it, expect } from 'vitest';`.\n"
+                "- Organize tests in a `describe('...', () => { it('...', () => { ... }); });` block.\n"
+                "- If testing exceptions, use `expect(() => ...).toThrow(...)`."
+            ),
+        }
+        fw_instruction = framework_instructions.get(framework, framework_instructions["pytest"])
+
+        return (
+            "You are a Senior QA Automation Engineer and Software Architect.\n"
+            f"Generate high-quality unit tests for the following {language} code snippet using {framework}.\n"
+            f"Test Focus Objective: '{test_focus.upper()}'. {focus_instruction}\n\n"
+            f"{fw_instruction}\n\n"
+            "CRITICAL RULES:\n"
+            "1. OBSERVABLE BEHAVIOR: Test only the public contracts, inputs, and outputs explicitly defined in the code snippet. Do NOT fabricate non-existent functions, properties, or APIs.\n"
+            "2. NO EXTERNAL CALLS: Do NOT make network calls, read/write files, or interact with real hardware/databases. Use mocks if external interfaces are present.\n"
+            "3. NO THIRD-PARTY PACKAGES: Use only standard assertions from the specified test framework.\n"
+            "4. VALID AND RUNNABLE: The generated code must be syntactically valid and framework-compliant.\n"
+            "5. DISCRETE TEST CASES: Break down the test suite into distinct, named test cases with descriptions, categories ('normal', 'edge_case', 'error_handling'), and expected behaviors.\n\n"
+            f"```{language}\n"
+            f"{code}\n"
+            "```\n\n"
+            "Respond ONLY with a valid JSON object adhering strictly to this schema:\n"
+            "{\n"
+            '  "summary": "Concise summary of the generated unit test suite.",\n'
+            '  "language": "' + language + '",\n'
+            '  "framework": "' + framework + '",\n'
+            '  "test_focus": "' + test_focus + '",\n'
+            '  "generated_test_code": "Full, complete unit test code as a single string",\n'
+            '  "test_cases": [\n'
+            "    {\n"
+            '      "name": "test_function_scenario",\n'
+            '      "category": "normal | edge_case | error_handling | boundary",\n'
+            '      "description": "Clear explanation of what this test case asserts",\n'
+            '      "expected_behavior": "The expected return value, state change, or thrown exception"\n'
+            "    }\n"
+            "  ],\n"
+            '  "coverage_notes": [\n'
+            '    "Logical input coverage notes explaining partitions and boundaries covered"\n'
+            "  ],\n"
+            '  "assumptions": [\n'
+            '    "Input types or contract invariants assumed about the function"\n'
+            "  ],\n"
+            '  "warnings": [\n'
+            '    "Any behavioral caveats or verification reminders"\n'
+            "  ]\n"
+            "}\n\n"
+            "Return ONLY the raw JSON object."
+        )
+
+    async def generate_tests(
+        self,
+        code: str,
+        language: str,
+        framework: str,
+        test_focus: str = "comprehensive",
+    ) -> GenerateTestsResponse:
+        """
+        Sends an asynchronous inference request to local Ollama for unit test generation.
+        Guarantees code is treated as an inert string and never executed.
+        Validates generated test cases, extracts code, and ensures safety disclaimers.
+        """
+        prompt = self.build_test_generation_prompt(code, language, framework, test_focus)
+        parsed = await self._generate_json(prompt, temperature=0.2)
+
+        # Summary normalization
+        summary = parsed.get("summary")
+        if not summary or not isinstance(summary, str):
+            summary = f"Generated {framework} unit tests for {language} source code."
+
+        # Generated test code normalization
+        generated_code = parsed.get("generated_test_code")
+        if isinstance(generated_code, dict):
+            generated_code = generated_code.get("code", "")
+        if not generated_code or not isinstance(generated_code, str) or not generated_code.strip():
+            # Fallback boilerplate
+            if framework == "pytest":
+                generated_code = f"import pytest\n\n# Unit tests generated for {language}\n"
+            else:
+                generated_code = f"import {{ describe, it, expect }} from 'vitest';\n\n// Unit tests generated for {language}\n"
+        else:
+            generated_code = generated_code.strip()
+            if generated_code.startswith("```"):
+                generated_code = re.sub(r"^```(?:[a-zA-Z0-9_\-+]+)?\s*", "", generated_code)
+                generated_code = re.sub(r"\s*```$", "", generated_code).strip()
+
+        # Test cases normalization
+        raw_test_cases = parsed.get("test_cases")
+        test_cases: List[GeneratedTestCase] = []
+        if isinstance(raw_test_cases, list):
+            for tc in raw_test_cases:
+                if isinstance(tc, dict):
+                    name = str(tc.get("name", "")).strip() or "test_case"
+                    category = str(tc.get("category", "normal")).strip().lower() or "normal"
+                    description = str(tc.get("description", "")).strip() or "Test case assertion."
+                    expected_behavior = str(tc.get("expected_behavior", "")).strip() or "Expected result asserted."
+                    test_cases.append(
+                        GeneratedTestCase(
+                            name=name,
+                            category=category,
+                            description=description,
+                            expected_behavior=expected_behavior,
+                        )
+                    )
+
+        # Coverage notes normalization
+        raw_coverage = parsed.get("coverage_notes")
+        coverage_notes: List[str] = []
+        if isinstance(raw_coverage, list):
+            for note in raw_coverage:
+                if note and isinstance(note, str) and note.strip():
+                    coverage_notes.append(note.strip())
+        elif isinstance(raw_coverage, str) and raw_coverage.strip():
+            coverage_notes.append(raw_coverage.strip())
+
+        # Assumptions normalization
+        raw_assumptions = parsed.get("assumptions")
+        assumptions: List[str] = []
+        if isinstance(raw_assumptions, list):
+            for a in raw_assumptions:
+                if a and isinstance(a, str) and a.strip():
+                    assumptions.append(a.strip())
+        elif isinstance(raw_assumptions, str) and raw_assumptions.strip():
+            assumptions.append(raw_assumptions.strip())
+
+        # Warnings normalization with mandatory unexecuted safety advisory
+        raw_warnings = parsed.get("warnings")
+        warnings: List[str] = []
+        if isinstance(raw_warnings, list):
+            for w in raw_warnings:
+                if w and isinstance(w, str) and w.strip():
+                    warnings.append(w.strip())
+        elif isinstance(raw_warnings, str) and raw_warnings.strip():
+            warnings.append(raw_warnings.strip())
+
+        safety_advisory = (
+            "Generated tests have not been executed or verified against the source code. "
+            "Review assertions before running in your local test environment."
+        )
+        if not any("not been executed" in w.lower() or "review assertions" in w.lower() for w in warnings):
+            warnings.append(safety_advisory)
+
+        return GenerateTestsResponse(
+            summary=summary,
+            language=language,
+            framework=framework,
+            test_focus=test_focus,
+            generated_test_code=generated_code,
+            test_cases=test_cases,
+            coverage_notes=coverage_notes,
+            assumptions=assumptions,
+            warnings=warnings,
+        )
+
 
 # Default singleton instance
 ollama_service = OllamaService()
+
 

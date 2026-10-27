@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, status
 from app.schemas.ai import (
     ExplainCodeRequest,
     ExplainCodeResponse,
+    GenerateTestsRequest,
+    GenerateTestsResponse,
     OptimizeCodeRequest,
     OptimizeCodeResponse,
     ReviewCodeRequest,
@@ -73,5 +75,29 @@ async def optimize_code(
         language=payload.language,
         optimization_goal=payload.optimization_goal,
     )
+
+
+@router.post(
+    "/generate-tests",
+    response_model=GenerateTestsResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Generate unit tests with local AI",
+    description="Analyzes submitted source code and generates framework-compatible unit tests (pytest for Python, vitest for JS/TS) with structured test cases.",
+)
+async def generate_tests(
+    payload: GenerateTestsRequest,
+    service: OllamaService = Depends(get_ollama_service),
+) -> GenerateTestsResponse:
+    """
+    Endpoint for AI unit test generation.
+    Never executes user-submitted or model-generated code.
+    """
+    return await service.generate_tests(
+        code=payload.code,
+        language=payload.language,
+        framework=payload.framework,
+        test_focus=payload.test_focus,
+    )
+
 
 

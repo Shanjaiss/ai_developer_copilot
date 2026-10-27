@@ -8,7 +8,7 @@ import './App.css';
 export function App() {
   return (
     <QueryProvider>
-      <DashboardView initialView="optimizer" />
+      <DashboardView initialView="test-generator" />
     </QueryProvider>
   );
 }

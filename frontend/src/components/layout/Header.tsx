@@ -2,7 +2,7 @@ import { StatusPill } from '../ui/StatusPill';
 import { Button } from '../ui/Button';
 import type { ConnectionStatus } from '../../types';
 
-export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer';
+export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator';
 
 export interface HeaderProps {
   connectionStatus: ConnectionStatus;
@@ -16,7 +16,7 @@ export function Header({
   connectionStatus,
   isRefreshing = false,
   onRefresh,
-  activeView = 'optimizer',
+  activeView = 'test-generator',
   onViewChange,
 }: HeaderProps) {
   return (
@@ -39,7 +39,7 @@ export function Header({
         <div className="brand-info">
           <h1>
             AI Developer Copilot
-            <span className="brand-badge">Phase 4 • Optimizer</span>
+            <span className="brand-badge">Phase 5 • Test Generator</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
@@ -47,6 +47,15 @@ export function Header({
 
       {onViewChange && (
         <div className="view-tabs" role="tablist" aria-label="Feature navigation">
+          <button
+            id="tab-test-generator"
+            role="tab"
+            aria-selected={activeView === 'test-generator'}
+            className={`view-tab ${activeView === 'test-generator' ? 'active' : ''}`}
+            onClick={() => onViewChange('test-generator')}
+          >
+            <span>🧪</span> AI Test Generator
+          </button>
           <button
             id="tab-code-optimizer"
             role="tab"

@@ -1,5 +1,5 @@
 from typing import List, Optional, Literal
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 from app.core.config import settings
 
 
@@ -272,4 +272,151 @@ class OptimizeCodeResponse(BaseModel):
         default_factory=list,
         description="Advisories, trade-off notes, behavioral caveats, and benchmark reminders.",
     )
+
+
+TestFramework = Literal["pytest", "vitest"]
+TestFocus = Literal["basic", "edge_cases", "error_handling", "comprehensive"]
+
+
+class GenerateTestsRequest(BaseCodeRequest):
+    """
+    Request payload for AI unit test generation engine.
+    Specifies source code, target language, test framework, and test focus.
+    """
+    framework: TestFramework = Field(
+        ...,
+        description="Target test runner framework: pytest (Python) or vitest (JavaScript/TypeScript).",
+        examples=["pytest"],
+    )
+    test_focus: TestFocus = Field(
+        default="comprehensive",
+        description="Test generation focus: basic, edge_cases, error_handling, or comprehensive.",
+        examples=["comprehensive"],
+    )
+
+    @field_validator("framework", mode="before")
+    @classmethod
+    def validate_framework_format(cls, v: object) -> str:
+        if isinstance(v, str):
+            v_clean = v.strip().lower()
+            if v_clean in {"pytest", "vitest"}:
+                return v_clean
+        raise ValueError("Unsupported framework. Supported frameworks: pytest, vitest")
+
+    @field_validator("test_focus", mode="before")
+    @classmethod
+    def validate_test_focus_format(cls, v: object) -> str:
+        if isinstance(v, str):
+            v_clean = v.strip().lower()
+            if v_clean in {"basic", "edge_cases", "error_handling", "comprehensive"}:
+                return v_clean
+        raise ValueError(
+            "Invalid test focus. Supported values: basic, edge_cases, error_handling, comprehensive"
+        )
+
+    @model_validator(mode="after")
+    def validate_language_framework_compatibility(self) -> "GenerateTestsRequest":
+        """
+        Validates that the selected testing framework is compatible with the programming language.
+        Supported combinations:
+          - python -> pytest
+          - javascript -> vitest
+          - typescript -> vitest
+        """
+        valid_pairings = {
+            "python": {"pytest"},
+            "javascript": {"vitest"},
+            "typescript": {"vitest"},
+        }
+        lang = self.language
+        fw = self.framework
+
+        if lang not in valid_pairings:
+            supported_langs = ", ".join(sorted(valid_pairings.keys()))
+            raise ValueError(
+                f"Language '{lang}' is not supported for test generation. Supported languages: {supported_langs}"
+            )
+
+        allowed_fw = valid_pairings[lang]
+        if fw not in allowed_fw:
+            allowed_str = ", ".join(sorted(allowed_fw))
+            raise ValueError(
+                f"Framework '{fw}' is incompatible with language '{lang}'. Allowed framework(s) for {lang}: {allowed_str}"
+            )
+
+        return self
+
+
+class GeneratedTestCase(BaseModel):
+    """
+    Structured representation of a single unit test case.
+    """
+    name: str = Field(
+        ...,
+        description="Identifier or function name of the test case.",
+        examples=["test_add_positive_numbers"],
+    )
+    category: str = Field(
+        default="normal",
+        description="Category: normal, edge_case, error_handling, boundary, etc.",
+        examples=["normal"],
+    )
+    description: str = Field(
+        ...,
+        description="Detailed description of what the test case checks.",
+        examples=["Checks addition of two positive integers."],
+    )
+    expected_behavior: str = Field(
+        ...,
+        description="Observable expected outcome or return value.",
+        examples=["Returns the sum of both inputs."],
+    )
+
+
+class GenerateTestsResponse(BaseModel):
+    """
+    Structured AI unit test generation response.
+    """
+    summary: str = Field(
+        ...,
+        description="Executive summary of the generated test suite.",
+        examples=["Generated comprehensive unit tests for the add function."],
+    )
+    language: str = Field(
+        ...,
+        description="Programming language of the tested code.",
+        examples=["python"],
+    )
+    framework: str = Field(
+        ...,
+        description="Testing framework: pytest or vitest.",
+        examples=["pytest"],
+    )
+    test_focus: str = Field(
+        ...,
+        description="Selected test focus: basic, edge_cases, error_handling, comprehensive.",
+        examples=["comprehensive"],
+    )
+    generated_test_code: str = Field(
+        ...,
+        description="Complete, framework-compliant unit test code as plain text.",
+        examples=["import pytest\n\ndef test_add():\n    assert add(1, 2) == 3\n"],
+    )
+    test_cases: List[GeneratedTestCase] = Field(
+        default_factory=list,
+        description="List of discrete test case structures.",
+    )
+    coverage_notes: List[str] = Field(
+        default_factory=list,
+        description="Logical test coverage intentions and input domain partitions.",
+    )
+    assumptions: List[str] = Field(
+        default_factory=list,
+        description="Contract assumptions and type bounds assumed about the source code.",
+    )
+    warnings: List[str] = Field(
+        default_factory=list,
+        description="Disclaimers, caveats, and safety warnings.",
+    )
+
 

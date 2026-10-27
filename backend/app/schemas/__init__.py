@@ -3,6 +3,9 @@ from .ai import (
     ComplexityMetrics,
     ExplainCodeRequest,
     ExplainCodeResponse,
+    GeneratedTestCase,
+    GenerateTestsRequest,
+    GenerateTestsResponse,
     OptimizationChange,
     OptimizationGoal,
     OptimizeCodeRequest,
@@ -10,6 +13,8 @@ from .ai import (
     ReviewCodeRequest,
     ReviewCodeResponse,
     ReviewIssue,
+    TestFocus,
+    TestFramework,
 )
 
 __all__ = [
@@ -17,6 +22,9 @@ __all__ = [
     "ComplexityMetrics",
     "ExplainCodeRequest",
     "ExplainCodeResponse",
+    "GeneratedTestCase",
+    "GenerateTestsRequest",
+    "GenerateTestsResponse",
     "OptimizationChange",
     "OptimizationGoal",
     "OptimizeCodeRequest",
@@ -24,5 +32,7 @@ __all__ = [
     "ReviewCodeRequest",
     "ReviewCodeResponse",
     "ReviewIssue",
+    "TestFocus",
+    "TestFramework",
 ]
 

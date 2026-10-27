@@ -15,6 +15,8 @@ export const API_ENDPOINTS = {
   AI_REVIEW: '/api/v1/ai/review',
   /** AI code optimization engine endpoint */
   AI_OPTIMIZE: '/api/v1/ai/optimize',
+  /** AI unit test generation engine endpoint */
+  AI_GENERATE_TESTS: '/api/v1/ai/generate-tests',
   /** Future projects resource endpoint */
   PROJECTS: '/api/v1/projects',
 } as const;
