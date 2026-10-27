@@ -1,7 +1,12 @@
 from .ai import (
     BaseCodeRequest,
+    ComplexityMetrics,
     ExplainCodeRequest,
     ExplainCodeResponse,
+    OptimizationChange,
+    OptimizationGoal,
+    OptimizeCodeRequest,
+    OptimizeCodeResponse,
     ReviewCodeRequest,
     ReviewCodeResponse,
     ReviewIssue,
@@ -9,9 +14,15 @@ from .ai import (
 
 __all__ = [
     "BaseCodeRequest",
+    "ComplexityMetrics",
     "ExplainCodeRequest",
     "ExplainCodeResponse",
+    "OptimizationChange",
+    "OptimizationGoal",
+    "OptimizeCodeRequest",
+    "OptimizeCodeResponse",
     "ReviewCodeRequest",
     "ReviewCodeResponse",
     "ReviewIssue",
 ]
+

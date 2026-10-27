@@ -10,7 +10,10 @@ import httpx
 from fastapi import HTTPException, status
 from app.core.config import settings
 from app.schemas.ai import (
+    ComplexityMetrics,
     ExplainCodeResponse,
+    OptimizationChange,
+    OptimizeCodeResponse,
     ReviewCodeResponse,
     ReviewIssue,
 )
@@ -369,6 +372,154 @@ class OllamaService:
             improved_code=improved_code,
         )
 
+    # -------------------------------------------------------------------------
+    # Code Optimization Engine Feature (Phase 4)
+    # -------------------------------------------------------------------------
+
+    def build_optimization_prompt(self, code: str, language: str, optimization_goal: str) -> str:
+        """
+        Constructs a structured prompt for the code optimization engine.
+        Instructs the model to optimize for the chosen goal while strictly preserving behavior.
+        Treats submitted code strictly as inert untrusted text.
+        """
+        return (
+            "You are a Principal Software Engineer and Systems Performance Architect.\n"
+            f"Analyze and optimize the following {language} code snippet specifically for the goal: '{optimization_goal.upper()}'.\n\n"
+            "Optimization Goal Guidelines:\n"
+            "- 'performance': Reduce asymptotic time complexity (e.g. replace O(n^2) nested loop search with an O(n) hash set/dict lookup, replace repeated += string concatenations with str.join()), eliminate redundant computations, and optimize loops.\n"
+            "- 'readability': Improve variable names, simplify complex control flow, adhere to idiomatic styling, and add clarity.\n"
+            "- 'memory': Reduce auxiliary space complexity, avoid redundant allocations, and favor generators/iterators where appropriate.\n"
+            "- 'maintainability': Improve modularity, cohesion, clear separation of concerns, error handling, and robust typing.\n\n"
+            "CRITICAL RULES:\n"
+            "1. BEHAVIOR PRESERVATION: The optimized code MUST preserve identical input/output semantics and edge-case behavior. Do NOT change function signatures or return types.\n"
+            "2. APPLICABILITY: If the code has quadratic O(n^2) nested searches or repeated string concatenations, provide the optimized O(n) implementation and list the change. ONLY if the code is genuinely already optimal (e.g. a simple constant-time O(1) mathematical function or already optimal single pass), return the original code unchanged, set changes to [], and explain why in summary.\n"
+            "3. NO ARBITRARY CLAIMS: Do not claim code is faster or equivalent without technical justification. State concrete trade-offs for every change (e.g. trading O(n) auxiliary memory for O(n) time).\n"
+            "4. COMPLEXITY ESTIMATION: Provide explicit Big-O notation for time and space complexity for both original and optimized code (e.g. 'O(n^2)', 'O(n)', 'O(1)').\n\n"
+            f"```{language}\n"
+            f"{code}\n"
+            "```\n\n"
+            "Respond ONLY with a valid JSON object adhering strictly to this schema:\n"
+            "{\n"
+            '  "summary": "Clear, technical summary of the optimizations performed or why code is already optimal.",\n'
+            '  "original_complexity": {\n'
+            '    "time": "O(...) original time complexity",\n'
+            '    "space": "O(...) original space complexity"\n'
+            "  },\n"
+            '  "optimized_complexity": {\n'
+            '    "time": "O(...) optimized time complexity",\n'
+            '    "space": "O(...) optimized space complexity"\n'
+            "  },\n"
+            '  "optimized_code": "Full optimized code snippet as a string",\n'
+            '  "changes": [\n'
+            "    {\n"
+            '      "title": "Short title of change",\n'
+            '      "reason": "Detailed justification for why this helps the target goal",\n'
+            '      "tradeoff": "Any memory, readability, or architectural trade-off incurred"\n'
+            "    }\n"
+            "  ],\n"
+            '  "warnings": [\n'
+            '    "Any behavioral caveats, workload assumptions, or empirical benchmarking reminders"\n'
+            "  ]\n"
+            "}\n\n"
+            "Return ONLY the raw JSON object."
+        )
+
+    async def optimize_code(
+        self,
+        code: str,
+        language: str,
+        optimization_goal: str = "performance",
+    ) -> OptimizeCodeResponse:
+        """
+        Sends an asynchronous inference request to local Ollama for code optimization.
+        Guarantees code is treated as an inert string and never executed.
+        Validates complexity metrics, changes list, and guarantees fallback safety.
+        """
+        prompt = self.build_optimization_prompt(code, language, optimization_goal)
+        parsed = await self._generate_json(prompt, temperature=0.2)
+
+        # Summary normalization
+        summary = parsed.get("summary")
+        if not summary or not isinstance(summary, str):
+            summary = f"Code analyzed and evaluated for {optimization_goal} optimization."
+
+        # Complexity parsing helper
+        def extract_complexity(comp_val: Any, default_time: str, default_space: str) -> ComplexityMetrics:
+            if isinstance(comp_val, dict):
+                t = str(comp_val.get("time", default_time)).strip() or default_time
+                s = str(comp_val.get("space", default_space)).strip() or default_space
+                return ComplexityMetrics(time=t, space=s)
+            elif isinstance(comp_val, str) and comp_val.strip():
+                return ComplexityMetrics(time=comp_val.strip(), space=default_space)
+            return ComplexityMetrics(time=default_time, space=default_space)
+
+        orig_complexity = extract_complexity(parsed.get("original_complexity"), "O(n)", "O(1)")
+        opt_complexity = extract_complexity(parsed.get("optimized_complexity"), "O(n)", "O(1)")
+
+        # Changes normalization
+        raw_changes = parsed.get("changes")
+        changes: List[OptimizationChange] = []
+        if isinstance(raw_changes, list):
+            for item in raw_changes:
+                if isinstance(item, dict):
+                    title = str(item.get("title", "")).strip() or "Code Optimization"
+                    reason = str(item.get("reason", "")).strip() or f"Improves {optimization_goal}."
+                    tradeoff = str(item.get("tradeoff", "")).strip() or "None identified."
+                    changes.append(
+                        OptimizationChange(
+                            title=title,
+                            reason=reason,
+                            tradeoff=tradeoff,
+                        )
+                    )
+
+        # Warnings normalization
+        raw_warnings = parsed.get("warnings")
+        warnings: List[str] = []
+        if isinstance(raw_warnings, list):
+            for w in raw_warnings:
+                if w and isinstance(w, str) and w.strip():
+                    warnings.append(w.strip())
+        elif isinstance(raw_warnings, str) and raw_warnings.strip():
+            warnings.append(raw_warnings.strip())
+
+        # Standard benchmark reminder
+        benchmark_advisory = (
+            "Empirical benchmark reminder: Big-O estimates are theoretical. "
+            "Validate performance improvements with realistic test workloads and profiling tools before production release."
+        )
+        if not any("benchmark" in w.lower() or "empirical" in w.lower() for w in warnings):
+            warnings.append(benchmark_advisory)
+
+        # Optimized code normalization
+        optimized_code = parsed.get("optimized_code")
+        if isinstance(optimized_code, dict):
+            optimized_code = optimized_code.get("code", "")
+        if not optimized_code or not isinstance(optimized_code, str) or not optimized_code.strip():
+            optimized_code = code
+        else:
+            optimized_code = optimized_code.strip()
+            if optimized_code.startswith("```"):
+                optimized_code = re.sub(r"^```(?:[a-zA-Z0-9_\-+]+)?\s*", "", optimized_code)
+                optimized_code = re.sub(r"\s*```$", "", optimized_code).strip()
+
+        # If code unchanged and no changes listed, clarify in summary & warnings
+        if optimized_code == code and not changes:
+            if "already optimal" not in summary.lower() and "no changes" not in summary.lower():
+                summary = f"The provided code is already well-optimized for {optimization_goal}; no safe, justified modifications were identified."
+            if not any("already optimal" in w.lower() or "no modifications" in w.lower() for w in warnings):
+                warnings.insert(0, f"No modifications were applied because the code is already optimal for {optimization_goal} without semantic risk.")
+
+        return OptimizeCodeResponse(
+            summary=summary,
+            original_complexity=orig_complexity,
+            optimized_complexity=opt_complexity,
+            optimized_code=optimized_code,
+            changes=changes,
+            warnings=warnings,
+        )
+
 
 # Default singleton instance
 ollama_service = OllamaService()
+

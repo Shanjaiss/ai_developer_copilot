@@ -11,6 +11,7 @@ import { ApiContractVerifier } from './components/ApiContractVerifier';
 import { TechStackMatrix } from './components/TechStackMatrix';
 import { CodeExplainerView } from '../code-explainer/CodeExplainerView';
 import { CodeReviewView } from '../code-review/CodeReviewView';
+import { CodeOptimizerView } from '../code-optimizer/CodeOptimizerView';
 import type { ConnectionStatus, HealthResponse, WelcomeResponse } from '../../types';
 
 export interface DashboardViewProps {
@@ -95,10 +96,12 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
       )}
 
       {/* Conditional View Rendering */}
-      {activeView === 'explainer' ? (
-        <CodeExplainerView />
+      {activeView === 'optimizer' ? (
+        <CodeOptimizerView />
       ) : activeView === 'review' ? (
         <CodeReviewView />
+      ) : activeView === 'explainer' ? (
+        <CodeExplainerView />
       ) : (
         <>
           {/* Hero Project Banner */}

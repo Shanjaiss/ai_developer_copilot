@@ -178,3 +178,98 @@ class ReviewCodeResponse(BaseModel):
             "def divide(a, b):\n    if b == 0:\n        raise ValueError('Denominator cannot be zero')\n    return a / b"
         ],
     )
+
+
+OptimizationGoal = Literal["performance", "readability", "memory", "maintainability"]
+
+
+class OptimizeCodeRequest(BaseCodeRequest):
+    """
+    Request payload for AI code optimization engine.
+    Allows targeting specific optimization dimensions: performance, readability, memory, or maintainability.
+    """
+    optimization_goal: OptimizationGoal = Field(
+        default="performance",
+        description="Target optimization objective: performance, readability, memory, or maintainability.",
+        examples=["performance"],
+    )
+
+    @field_validator("optimization_goal", mode="before")
+    @classmethod
+    def validate_and_normalize_goal(cls, v: object) -> str:
+        if isinstance(v, str):
+            v_clean = v.strip().lower()
+            if v_clean in {"performance", "readability", "memory", "maintainability"}:
+                return v_clean
+        raise ValueError(
+            "Invalid optimization goal. Supported goals: performance, readability, memory, maintainability"
+        )
+
+
+class ComplexityMetrics(BaseModel):
+    """
+    Big-O algorithmic complexity estimates for time and space.
+    """
+    time: str = Field(
+        ...,
+        description="Big-O algorithmic time complexity estimate.",
+        examples=["O(n)"],
+    )
+    space: str = Field(
+        ...,
+        description="Big-O auxiliary space complexity estimate.",
+        examples=["O(1)"],
+    )
+
+
+class OptimizationChange(BaseModel):
+    """
+    Discrete modification made during code optimization.
+    """
+    title: str = Field(
+        ...,
+        description="Concise title describing the code change.",
+        examples=["Use Hash Set for O(1) Lookups"],
+    )
+    reason: str = Field(
+        ...,
+        description="Justification for why this change optimizes toward the goal.",
+        examples=["Replaces O(n) inner loop scan with constant-time O(1) set lookup."],
+    )
+    tradeoff: str = Field(
+        ...,
+        description="Engineering trade-offs (e.g., extra memory, complexity, or readability impact).",
+        examples=["Requires O(n) auxiliary memory for the hash set."],
+    )
+
+
+class OptimizeCodeResponse(BaseModel):
+    """
+    Structured AI code optimization response.
+    """
+    summary: str = Field(
+        ...,
+        description="High-level explanation of optimization results.",
+        examples=["Refactored nested loops to set-based lookups, improving time complexity from O(n^2) to O(n)."],
+    )
+    original_complexity: ComplexityMetrics = Field(
+        ...,
+        description="Estimated time and space complexity of original code.",
+    )
+    optimized_complexity: ComplexityMetrics = Field(
+        ...,
+        description="Estimated time and space complexity of optimized code.",
+    )
+    optimized_code: str = Field(
+        ...,
+        description="Optimized source code snippet. May be identical to original if code is already optimal.",
+    )
+    changes: List[OptimizationChange] = Field(
+        default_factory=list,
+        description="List of specific changes applied with reasons and trade-offs.",
+    )
+    warnings: List[str] = Field(
+        default_factory=list,
+        description="Advisories, trade-off notes, behavioral caveats, and benchmark reminders.",
+    )
+

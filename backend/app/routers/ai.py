@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, status
 from app.schemas.ai import (
     ExplainCodeRequest,
     ExplainCodeResponse,
+    OptimizeCodeRequest,
+    OptimizeCodeResponse,
     ReviewCodeRequest,
     ReviewCodeResponse,
 )
@@ -49,4 +51,27 @@ async def review_code(
     Never executes the submitted code.
     """
     return await service.review_code(code=payload.code, language=payload.language)
+
+
+@router.post(
+    "/optimize",
+    response_model=OptimizeCodeResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Optimize code with local AI",
+    description="Analyzes submitted source code and optimizes it according to the requested objective (performance, readability, memory, maintainability).",
+)
+async def optimize_code(
+    payload: OptimizeCodeRequest,
+    service: OllamaService = Depends(get_ollama_service),
+) -> OptimizeCodeResponse:
+    """
+    Endpoint for AI code optimization.
+    Never executes the submitted code.
+    """
+    return await service.optimize_code(
+        code=payload.code,
+        language=payload.language,
+        optimization_goal=payload.optimization_goal,
+    )
+
 

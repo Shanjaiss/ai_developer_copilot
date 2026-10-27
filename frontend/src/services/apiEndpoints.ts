@@ -13,6 +13,8 @@ export const API_ENDPOINTS = {
   AI_EXPLAIN: '/api/v1/ai/explain',
   /** AI code review and bug detection engine endpoint */
   AI_REVIEW: '/api/v1/ai/review',
+  /** AI code optimization engine endpoint */
+  AI_OPTIMIZE: '/api/v1/ai/optimize',
   /** Future projects resource endpoint */
   PROJECTS: '/api/v1/projects',
 } as const;

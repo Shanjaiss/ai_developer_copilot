@@ -60,3 +60,32 @@ export interface ReviewCodeResponse {
   improved_code: string;
 }
 
+export type OptimizationGoal = 'performance' | 'readability' | 'memory' | 'maintainability';
+
+export interface ComplexityMetrics {
+  time: string;
+  space: string;
+}
+
+export interface OptimizationChange {
+  title: string;
+  reason: string;
+  tradeoff: string;
+}
+
+export interface OptimizeCodeRequest {
+  code: string;
+  language: string;
+  optimization_goal?: OptimizationGoal;
+}
+
+export interface OptimizeCodeResponse {
+  summary: string;
+  original_complexity: ComplexityMetrics;
+  optimized_complexity: ComplexityMetrics;
+  optimized_code: string;
+  changes: OptimizationChange[];
+  warnings: string[];
+}
+
+

@@ -2,7 +2,7 @@ import { StatusPill } from '../ui/StatusPill';
 import { Button } from '../ui/Button';
 import type { ConnectionStatus } from '../../types';
 
-export type ActiveView = 'dashboard' | 'explainer' | 'review';
+export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer';
 
 export interface HeaderProps {
   connectionStatus: ConnectionStatus;
@@ -16,7 +16,7 @@ export function Header({
   connectionStatus,
   isRefreshing = false,
   onRefresh,
-  activeView = 'review',
+  activeView = 'optimizer',
   onViewChange,
 }: HeaderProps) {
   return (
@@ -39,7 +39,7 @@ export function Header({
         <div className="brand-info">
           <h1>
             AI Developer Copilot
-            <span className="brand-badge">Day 3 • Code Review</span>
+            <span className="brand-badge">Phase 4 • Optimizer</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
@@ -48,13 +48,13 @@ export function Header({
       {onViewChange && (
         <div className="view-tabs" role="tablist" aria-label="Feature navigation">
           <button
-            id="tab-code-explainer"
+            id="tab-code-optimizer"
             role="tab"
-            aria-selected={activeView === 'explainer'}
-            className={`view-tab ${activeView === 'explainer' ? 'active' : ''}`}
-            onClick={() => onViewChange('explainer')}
+            aria-selected={activeView === 'optimizer'}
+            className={`view-tab ${activeView === 'optimizer' ? 'active' : ''}`}
+            onClick={() => onViewChange('optimizer')}
           >
-            <span>⚡</span> AI Code Explainer
+            <span>🚀</span> AI Code Optimizer
           </button>
           <button
             id="tab-code-review"
@@ -64,6 +64,15 @@ export function Header({
             onClick={() => onViewChange('review')}
           >
             <span>🛡️</span> AI Code Review
+          </button>
+          <button
+            id="tab-code-explainer"
+            role="tab"
+            aria-selected={activeView === 'explainer'}
+            className={`view-tab ${activeView === 'explainer' ? 'active' : ''}`}
+            onClick={() => onViewChange('explainer')}
+          >
+            <span>⚡</span> AI Code Explainer
           </button>
           <button
             id="tab-dashboard"

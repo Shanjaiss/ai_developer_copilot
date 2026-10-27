@@ -121,6 +121,13 @@ describe('DashboardView Feature Integration', () => {
 
     renderWithClient(<DashboardView initialView="dashboard" />);
 
+    // Click AI Code Optimizer tab
+    const optimizerTab = screen.getByRole('tab', { name: /AI Code Optimizer/i });
+    fireEvent.click(optimizerTab);
+
+    // Code Optimizer feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Algorithmic & Architectural Code Optimization/i })).toBeInTheDocument();
+
     // Click AI Code Review tab
     const reviewTab = screen.getByRole('tab', { name: /AI Code Review/i });
     fireEvent.click(reviewTab);
