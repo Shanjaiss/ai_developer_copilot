@@ -420,3 +420,133 @@ class GenerateTestsResponse(BaseModel):
     )
 
 
+# =============================================================================
+# Phase 6: Conversational AI Coding Assistant
+# =============================================================================
+
+ChatRole = Literal["user", "assistant"]
+
+
+class ChatMessage(BaseModel):
+    """
+    A single message turn in a multi-turn conversation.
+    Strictly limited to 'user' and 'assistant' roles (rejects client-supplied 'system' or 'developer').
+    """
+    role: ChatRole = Field(
+        ...,
+        description="The role of the message author: 'user' or 'assistant'.",
+        examples=["user"],
+    )
+    content: str = Field(
+        ...,
+        min_length=1,
+        max_length=4000,
+        description="Text content of the message.",
+        examples=["Explain Python decorators."],
+    )
+
+    @field_validator("content")
+    @classmethod
+    def validate_content_not_blank(cls, v: str) -> str:
+        trimmed = v.strip()
+        if not trimmed:
+            raise ValueError("Message content cannot be empty or only whitespace.")
+        return v
+
+
+class ChatRequest(BaseModel):
+    """
+    Request schema for conversational AI coding assistance.
+    """
+    message: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000,
+        description="The latest user message or coding query.",
+        examples=["Explain Python decorators."],
+    )
+    language: Optional[str] = Field(
+        default=None,
+        max_length=50,
+        description="Optional programming language context.",
+        examples=["python"],
+    )
+    code_context: Optional[str] = Field(
+        default=None,
+        max_length=5000,
+        description="Optional code snippet or traceback context.",
+        examples=["def add(a, b): return a + b"],
+    )
+    conversation: List[ChatMessage] = Field(
+        default_factory=list,
+        description="Ordered sequence of previous conversation turns for multi-turn context.",
+    )
+
+    @field_validator("message")
+    @classmethod
+    def validate_message_not_blank(cls, v: str) -> str:
+        trimmed = v.strip()
+        if not trimmed:
+            raise ValueError("Message cannot be empty or only whitespace.")
+        return v
+
+    @field_validator("language")
+    @classmethod
+    def normalize_language_if_present(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        trimmed = v.strip().lower()
+        if not trimmed:
+            return None
+        aliases = {
+            "js": "javascript",
+            "ts": "typescript",
+            "py": "python",
+            "golang": "go",
+            "c++": "cpp",
+            "c#": "csharp",
+            "sh": "bash",
+        }
+        normalized = aliases.get(trimmed, trimmed)
+        if normalized not in settings.ALLOWED_LANGUAGES:
+            supported = ", ".join(sorted(settings.ALLOWED_LANGUAGES))
+            raise ValueError(
+                f"Unsupported language '{v}'. Supported languages: {supported}"
+            )
+        return normalized
+
+    @field_validator("code_context")
+    @classmethod
+    def validate_code_context(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return None
+        if not v.strip():
+            return None
+        return v
+
+
+class ChatResponse(BaseModel):
+    """
+    Response schema for conversational AI coding assistance.
+    """
+    reply: str = Field(
+        ...,
+        description="The AI coding assistant's conversational response.",
+        examples=["Decorators wrap functions to extend their behavior without modifying source code."],
+    )
+    model: str = Field(
+        default=settings.OLLAMA_MODEL,
+        description="The local LLM model used for inference.",
+        examples=["qwen2.5-coder:1.5b"],
+    )
+    context_used: bool = Field(
+        default=False,
+        description="Whether conversation history or code context was incorporated into the prompt.",
+    )
+    warnings: List[str] = Field(
+        default_factory=list,
+        description="Any warnings regarding context truncation or limitations.",
+    )
+
+
+

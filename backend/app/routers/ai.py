@@ -8,6 +8,8 @@ from app.schemas.ai import (
     OptimizeCodeResponse,
     ReviewCodeRequest,
     ReviewCodeResponse,
+    ChatRequest,
+    ChatResponse,
 )
 from app.services.ollama_service import OllamaService, ollama_service
 
@@ -98,6 +100,30 @@ async def generate_tests(
         framework=payload.framework,
         test_focus=payload.test_focus,
     )
+
+
+@router.post(
+    "/chat",
+    response_model=ChatResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Conversational AI coding assistant",
+    description="Multi-turn conversational coding assistance with optional code context and bounded history.",
+)
+async def chat(
+    payload: ChatRequest,
+    service: OllamaService = Depends(get_ollama_service),
+) -> ChatResponse:
+    """
+    Endpoint for conversational AI coding assistant.
+    Provides multi-turn dialogue with bounded context. Never executes code.
+    """
+    return await service.chat(
+        message=payload.message,
+        language=payload.language,
+        code_context=payload.code_context,
+        conversation=payload.conversation,
+    )
+
 
 
 

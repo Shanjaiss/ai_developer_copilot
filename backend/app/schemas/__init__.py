@@ -15,6 +15,25 @@ from .ai import (
     ReviewIssue,
     TestFocus,
     TestFramework,
+    ChatMessage,
+    ChatRequest,
+    ChatResponse,
+    ChatRole,
+)
+from .repository import (
+    ApprovedRepository,
+    RepositoryListResponse,
+    FileImport,
+    FileMetadata,
+    TreeNode,
+    RepositorySummary,
+    RepositoryScanResponse,
+    GroundedReference,
+    RepositoryChatMessage,
+    RepositoryAskRequest,
+    RepositoryAskResponse,
+    RepositoryDependenciesRequest,
+    RepositoryDependenciesResponse,
 )
 
 __all__ = [
@@ -34,5 +53,22 @@ __all__ = [
     "ReviewIssue",
     "TestFocus",
     "TestFramework",
+    "ChatMessage",
+    "ChatRequest",
+    "ChatResponse",
+    "ChatRole",
+    "ApprovedRepository",
+    "RepositoryListResponse",
+    "FileImport",
+    "FileMetadata",
+    "TreeNode",
+    "RepositorySummary",
+    "RepositoryScanResponse",
+    "GroundedReference",
+    "RepositoryChatMessage",
+    "RepositoryAskRequest",
+    "RepositoryAskResponse",
+    "RepositoryDependenciesRequest",
+    "RepositoryDependenciesResponse",
 ]
 

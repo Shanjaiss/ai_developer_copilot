@@ -13,6 +13,8 @@ import { CodeExplainerView } from '../code-explainer/CodeExplainerView';
 import { CodeReviewView } from '../code-review/CodeReviewView';
 import { CodeOptimizerView } from '../code-optimizer/CodeOptimizerView';
 import { TestGeneratorView } from '../test-generator/TestGeneratorView';
+import { AIChatView } from '../ai-chat/AIChatView';
+import { RepositoryIntelligenceView } from '../repository-intelligence/RepositoryIntelligenceView';
 import type { ConnectionStatus, HealthResponse, WelcomeResponse } from '../../types';
 
 export interface DashboardViewProps {
@@ -97,7 +99,11 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
       )}
 
       {/* Conditional View Rendering */}
-      {activeView === 'test-generator' ? (
+      {activeView === 'repository-intelligence' ? (
+        <RepositoryIntelligenceView />
+      ) : activeView === 'chat' ? (
+        <AIChatView />
+      ) : activeView === 'test-generator' ? (
         <TestGeneratorView />
       ) : activeView === 'optimizer' ? (
         <CodeOptimizerView />

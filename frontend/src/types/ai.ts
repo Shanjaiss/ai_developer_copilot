@@ -118,5 +118,27 @@ export interface GenerateTestsResponse {
   warnings: string[];
 }
 
+export type ChatRole = 'user' | 'assistant';
+
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
+}
+
+export interface ChatRequest {
+  message: string;
+  language?: string;
+  code_context?: string;
+  conversation?: ChatMessage[];
+}
+
+export interface ChatResponse {
+  reply: string;
+  model: string;
+  context_used: boolean;
+  warnings: string[];
+}
+
+
 
 

@@ -17,6 +17,18 @@ export const API_ENDPOINTS = {
   AI_OPTIMIZE: '/api/v1/ai/optimize',
   /** AI unit test generation engine endpoint */
   AI_GENERATE_TESTS: '/api/v1/ai/generate-tests',
+  /** Conversational AI coding assistant endpoint (Phase 6) */
+  AI_CHAT: '/api/v1/ai/chat',
+  /** Approved repositories discovery endpoint (Phase 7) */
+  REPOSITORIES: '/api/v1/repositories',
+  /** Repository scan endpoint (Phase 7) */
+  REPOSITORY_SCAN: (id: string) => `/api/v1/repositories/${id}/scan`,
+  /** Repository tree endpoint (Phase 7) */
+  REPOSITORY_TREE: (id: string) => `/api/v1/repositories/${id}/tree`,
+  /** Repository contextual Q&A endpoint (Phase 7) */
+  REPOSITORY_ASK: (id: string) => `/api/v1/repositories/${id}/ask`,
+  /** Repository file dependencies endpoint (Phase 7) */
+  REPOSITORY_DEPENDENCIES: (id: string) => `/api/v1/repositories/${id}/dependencies`,
   /** Future projects resource endpoint */
   PROJECTS: '/api/v1/projects',
 } as const;

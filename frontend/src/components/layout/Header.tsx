@@ -2,7 +2,7 @@ import { StatusPill } from '../ui/StatusPill';
 import { Button } from '../ui/Button';
 import type { ConnectionStatus } from '../../types';
 
-export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator';
+export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator' | 'chat' | 'repository-intelligence';
 
 export interface HeaderProps {
   connectionStatus: ConnectionStatus;
@@ -16,7 +16,7 @@ export function Header({
   connectionStatus,
   isRefreshing = false,
   onRefresh,
-  activeView = 'test-generator',
+  activeView = 'chat',
   onViewChange,
 }: HeaderProps) {
   return (
@@ -39,7 +39,7 @@ export function Header({
         <div className="brand-info">
           <h1>
             AI Developer Copilot
-            <span className="brand-badge">Phase 5 • Test Generator</span>
+            <span className="brand-badge">Phase 7 • Repo Intelligence</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
@@ -47,6 +47,24 @@ export function Header({
 
       {onViewChange && (
         <div className="view-tabs" role="tablist" aria-label="Feature navigation">
+          <button
+            id="tab-repo-intelligence"
+            role="tab"
+            aria-selected={activeView === 'repository-intelligence'}
+            className={`view-tab ${activeView === 'repository-intelligence' ? 'active' : ''}`}
+            onClick={() => onViewChange('repository-intelligence')}
+          >
+            <span>🧠</span> Repo Intelligence
+          </button>
+          <button
+            id="tab-ai-chat"
+            role="tab"
+            aria-selected={activeView === 'chat'}
+            className={`view-tab ${activeView === 'chat' ? 'active' : ''}`}
+            onClick={() => onViewChange('chat')}
+          >
+            <span>💬</span> AI Chat
+          </button>
           <button
             id="tab-test-generator"
             role="tab"

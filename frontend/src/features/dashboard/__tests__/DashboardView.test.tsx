@@ -121,6 +121,20 @@ describe('DashboardView Feature Integration', () => {
 
     renderWithClient(<DashboardView initialView="dashboard" />);
 
+    // Click Repo Intelligence tab
+    const repoTab = screen.getByRole('tab', { name: /Repo Intelligence/i });
+    fireEvent.click(repoTab);
+
+    // Repo Intelligence feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Lightweight Local Codebase Analysis & Architecture Q&A/i })).toBeInTheDocument();
+
+    // Click AI Chat tab
+    const chatTab = screen.getByRole('tab', { name: /AI Chat/i });
+    fireEvent.click(chatTab);
+
+    // AI Chat feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Conversational Coding Assistant & Pair Programmer/i })).toBeInTheDocument();
+
     // Click AI Test Generator tab
     const testGenTab = screen.getByRole('tab', { name: /AI Test Generator/i });
     fireEvent.click(testGenTab);

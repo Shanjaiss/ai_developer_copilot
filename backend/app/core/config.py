@@ -2,7 +2,8 @@
 Core configuration and application settings.
 """
 import os
-from typing import List, Set
+from typing import List, Set, Dict
+from pathlib import Path
 
 
 class Settings:
@@ -55,6 +56,56 @@ class Settings:
         if env_origins:
             return [origin.strip() for origin in env_origins.split(",") if origin.strip()]
         return self.DEFAULT_ORIGINS
+
+    # Phase 7: Repository Intelligence Configuration & Limits
+    APPROVED_REPOSITORY_ROOTS: str = os.getenv("APPROVED_REPOSITORY_ROOTS", "")
+    REPO_MAX_FILES: int = int(os.getenv("REPO_MAX_FILES", "300"))
+    REPO_MAX_FILE_SIZE_BYTES: int = int(os.getenv("REPO_MAX_FILE_SIZE_BYTES", str(100 * 1024)))  # 100 KB
+    REPO_MAX_AGGREGATE_BYTES: int = int(os.getenv("REPO_MAX_AGGREGATE_BYTES", str(3 * 1024 * 1024)))  # 3 MB
+    REPO_MAX_TREE_DEPTH: int = int(os.getenv("REPO_MAX_TREE_DEPTH", "12"))
+    REPO_MAX_CONTEXT_FILES: int = int(os.getenv("REPO_MAX_CONTEXT_FILES", "5"))
+    REPO_MAX_CONTEXT_CHARS: int = int(os.getenv("REPO_MAX_CONTEXT_CHARS", "8000"))
+    REPO_MAX_CONVERSATION_TURNS: int = int(os.getenv("REPO_MAX_CONVERSATION_TURNS", "6"))
+
+    def get_approved_repositories(self) -> Dict[str, Path]:
+        """
+        Parses APPROVED_REPOSITORY_ROOTS into a mapping of repository_id -> canonical Path.
+        Format can be JSON object (e.g. '{"copilot": "/path/to/repo"}') or
+        comma-separated 'id:path' or 'id=path' pairs (e.g. 'copilot:/path/to/repo,project2:/path2').
+        Resolves canonical paths and rejects non-existent directories.
+        """
+        import json
+        raw = os.getenv("APPROVED_REPOSITORY_ROOTS", self.APPROVED_REPOSITORY_ROOTS).strip()
+        if not raw:
+            return {}
+        repos: Dict[str, Path] = {}
+        if raw.startswith("{"):
+            try:
+                parsed = json.loads(raw)
+                if isinstance(parsed, dict):
+                    for k, v in parsed.items():
+                        p = Path(str(v)).resolve()
+                        if p.exists() and p.is_dir():
+                            repos[str(k).strip().lower()] = p
+            except Exception:
+                pass
+        else:
+            for item in raw.split(","):
+                item = item.strip()
+                if not item:
+                    continue
+                sep = ":" if ":" in item else "="
+                if sep in item:
+                    repo_id, path_str = item.split(sep, 1)
+                    repo_id = repo_id.strip().lower()
+                    p = Path(path_str.strip()).resolve()
+                    if p.exists() and p.is_dir():
+                        repos[repo_id] = p
+                else:
+                    p = Path(item).resolve()
+                    if p.exists() and p.is_dir():
+                        repos[p.name.lower()] = p
+        return repos
 
 
 settings = Settings()
