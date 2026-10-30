@@ -121,6 +121,13 @@ describe('DashboardView Feature Integration', () => {
 
     renderWithClient(<DashboardView initialView="dashboard" />);
 
+    // Click AI Debugger tab
+    const debugTab = screen.getByRole('tab', { name: /AI Debugger/i });
+    fireEvent.click(debugTab);
+
+    // AI Debugger feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /AI Bug Detection & Debugging/i })).toBeInTheDocument();
+
     // Click Repo Intelligence tab
     const repoTab = screen.getByRole('tab', { name: /Repo Intelligence/i });
     fireEvent.click(repoTab);

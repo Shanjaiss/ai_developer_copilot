@@ -19,6 +19,8 @@ export const API_ENDPOINTS = {
   AI_GENERATE_TESTS: '/api/v1/ai/generate-tests',
   /** Conversational AI coding assistant endpoint (Phase 6) */
   AI_CHAT: '/api/v1/ai/chat',
+  /** AI bug detection and debugging assistant endpoint (Phase 8) */
+  AI_DEBUG: '/api/v1/ai/debug',
   /** Approved repositories discovery endpoint (Phase 7) */
   REPOSITORIES: '/api/v1/repositories',
   /** Repository scan endpoint (Phase 7) */

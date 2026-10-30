@@ -3,3 +3,4 @@ export * from './health';
 export * from './welcome';
 export * from './ai';
 export * from './repository';
+export * from './debugging';

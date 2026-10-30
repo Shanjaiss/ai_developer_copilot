@@ -35,6 +35,14 @@ from .repository import (
     RepositoryDependenciesRequest,
     RepositoryDependenciesResponse,
 )
+from .debugging import (
+    StackFrame,
+    RootCauseHypothesis,
+    SuggestedFix,
+    DebugChatMessage,
+    DebugRequest,
+    DebugResponse,
+)
 
 __all__ = [
     "BaseCodeRequest",
@@ -70,5 +78,11 @@ __all__ = [
     "RepositoryAskResponse",
     "RepositoryDependenciesRequest",
     "RepositoryDependenciesResponse",
+    "StackFrame",
+    "RootCauseHypothesis",
+    "SuggestedFix",
+    "DebugChatMessage",
+    "DebugRequest",
+    "DebugResponse",
 ]
 

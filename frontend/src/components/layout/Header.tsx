@@ -2,7 +2,7 @@ import { StatusPill } from '../ui/StatusPill';
 import { Button } from '../ui/Button';
 import type { ConnectionStatus } from '../../types';
 
-export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator' | 'chat' | 'repository-intelligence';
+export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator' | 'chat' | 'repository-intelligence' | 'debugging';
 
 export interface HeaderProps {
   connectionStatus: ConnectionStatus;
@@ -39,7 +39,7 @@ export function Header({
         <div className="brand-info">
           <h1>
             AI Developer Copilot
-            <span className="brand-badge">Phase 7 • Repo Intelligence</span>
+            <span className="brand-badge">Phase 8 • AI Debugger</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
@@ -47,6 +47,15 @@ export function Header({
 
       {onViewChange && (
         <div className="view-tabs" role="tablist" aria-label="Feature navigation">
+          <button
+            id="tab-debugging"
+            role="tab"
+            aria-selected={activeView === 'debugging'}
+            className={`view-tab ${activeView === 'debugging' ? 'active' : ''}`}
+            onClick={() => onViewChange('debugging')}
+          >
+            <span>🐛</span> AI Debugger
+          </button>
           <button
             id="tab-repo-intelligence"
             role="tab"

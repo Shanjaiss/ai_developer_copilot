@@ -11,7 +11,12 @@ from app.schemas.ai import (
     ChatRequest,
     ChatResponse,
 )
+from app.schemas.debugging import (
+    DebugRequest,
+    DebugResponse,
+)
 from app.services.ollama_service import OllamaService, ollama_service
+from app.services.debugging_service import DebuggingService, debugging_service
 
 router = APIRouter(prefix="/ai", tags=["AI Code Engine"])
 
@@ -19,6 +24,11 @@ router = APIRouter(prefix="/ai", tags=["AI Code Engine"])
 def get_ollama_service() -> OllamaService:
     """Dependency injection provider for OllamaService."""
     return ollama_service
+
+
+def get_debugging_service() -> DebuggingService:
+    """Dependency injection provider for DebuggingService."""
+    return debugging_service
 
 
 @router.post(
@@ -123,6 +133,25 @@ async def chat(
         code_context=payload.code_context,
         conversation=payload.conversation,
     )
+
+
+@router.post(
+    "/debug",
+    response_model=DebugResponse,
+    status_code=status.HTTP_200_OK,
+    summary="AI Bug Detection and Debugging Assistant",
+    description="Analyzes error messages and stack traces, retrieves contextual evidence, identifies root causes, and suggests actionable fixes.",
+)
+async def debug_code(
+    payload: DebugRequest,
+    service: DebuggingService = Depends(get_debugging_service),
+) -> DebugResponse:
+    """
+    Endpoint for AI bug detection and debugging assistant.
+    Analyzes error messages and stack traces. Never executes code.
+    """
+    return await service.debug_error(payload=payload)
+
 
 
 
