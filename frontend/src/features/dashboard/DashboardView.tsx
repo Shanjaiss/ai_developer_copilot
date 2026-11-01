@@ -18,6 +18,7 @@ import { RepositoryIntelligenceView } from '../repository-intelligence/Repositor
 import { DebuggingView } from '../debugging/DebuggingView';
 import { RefactoringView } from '../refactoring/RefactoringView';
 import { DocumentationView } from '../documentation/DocumentationView';
+import { ProductivityView } from '../productivity/ProductivityView';
 import type { ConnectionStatus, HealthResponse, WelcomeResponse } from '../../types';
 
 export interface DashboardViewProps {
@@ -102,7 +103,9 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
       )}
 
       {/* Conditional View Rendering */}
-      {activeView === 'documentation' ? (
+      {activeView === 'productivity' ? (
+        <ProductivityView />
+      ) : activeView === 'documentation' ? (
         <DocumentationView />
       ) : activeView === 'refactoring' ? (
         <RefactoringView />

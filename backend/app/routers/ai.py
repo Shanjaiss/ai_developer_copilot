@@ -27,6 +27,7 @@ from app.services.ollama_service import OllamaService, ollama_service
 from app.services.debugging_service import DebuggingService, debugging_service
 from app.services.refactoring_service import RefactoringService, refactoring_service
 from app.services.documentation_service import DocumentationService, documentation_service
+from app.services.metrics_service import track_operation
 
 router = APIRouter(prefix="/ai", tags=["AI Code Engine"])
 
@@ -66,7 +67,8 @@ async def explain_code(
     Endpoint for AI code explanation.
     Never executes the submitted code.
     """
-    return await service.explain_code(code=payload.code, language=payload.language)
+    async with track_operation(feature="explain", operation="explain_code"):
+        return await service.explain_code(code=payload.code, language=payload.language)
 
 
 @router.post(
@@ -84,7 +86,8 @@ async def review_code(
     Endpoint for AI code review and bug detection.
     Never executes the submitted code.
     """
-    return await service.review_code(code=payload.code, language=payload.language)
+    async with track_operation(feature="review", operation="review_code"):
+        return await service.review_code(code=payload.code, language=payload.language)
 
 
 @router.post(
@@ -102,11 +105,12 @@ async def optimize_code(
     Endpoint for AI code optimization.
     Never executes the submitted code.
     """
-    return await service.optimize_code(
-        code=payload.code,
-        language=payload.language,
-        optimization_goal=payload.optimization_goal,
-    )
+    async with track_operation(feature="optimize", operation="optimize_code"):
+        return await service.optimize_code(
+            code=payload.code,
+            language=payload.language,
+            optimization_goal=payload.optimization_goal,
+        )
 
 
 @router.post(
@@ -124,12 +128,13 @@ async def generate_tests(
     Endpoint for AI unit test generation.
     Never executes user-submitted or model-generated code.
     """
-    return await service.generate_tests(
-        code=payload.code,
-        language=payload.language,
-        framework=payload.framework,
-        test_focus=payload.test_focus,
-    )
+    async with track_operation(feature="test_generator", operation="generate_tests"):
+        return await service.generate_tests(
+            code=payload.code,
+            language=payload.language,
+            framework=payload.framework,
+            test_focus=payload.test_focus,
+        )
 
 
 @router.post(
@@ -147,12 +152,13 @@ async def chat(
     Endpoint for conversational AI coding assistant.
     Provides multi-turn dialogue with bounded context. Never executes code.
     """
-    return await service.chat(
-        message=payload.message,
-        language=payload.language,
-        code_context=payload.code_context,
-        conversation=payload.conversation,
-    )
+    async with track_operation(feature="chat", operation="chat"):
+        return await service.chat(
+            message=payload.message,
+            language=payload.language,
+            code_context=payload.code_context,
+            conversation=payload.conversation,
+        )
 
 
 @router.post(
@@ -170,7 +176,8 @@ async def debug_code(
     Endpoint for AI bug detection and debugging assistant.
     Analyzes error messages and stack traces. Never executes code.
     """
-    return await service.debug_error(payload=payload)
+    async with track_operation(feature="debugging", operation="debug_code"):
+        return await service.debug_error(payload=payload)
 
 
 @router.post(
@@ -188,7 +195,8 @@ async def refactor_code(
     Endpoint for AI code refactoring assistant.
     Analyzes code maintainability and produces diffs. Never executes code or modifies repository files.
     """
-    return await service.refactor_code(payload=payload)
+    async with track_operation(feature="refactoring", operation="refactor_code"):
+        return await service.refactor_code(payload=payload)
 
 
 @router.post(
@@ -207,7 +215,8 @@ async def generate_documentation(
     Generates technical READMEs, API docs, code docs, and architecture summaries.
     Never modifies repository files or executes code.
     """
-    return await service.generate_documentation(payload=payload)
+    async with track_operation(feature="documentation", operation="generate_documentation"):
+        return await service.generate_documentation(payload=payload)
 
 
 

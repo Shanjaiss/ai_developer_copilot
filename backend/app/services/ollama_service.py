@@ -36,6 +36,33 @@ class OllamaService:
         self.model = model
         self.timeout = timeout
 
+    async def check_health(self) -> Dict[str, Any]:
+        """
+        Check connectivity to the local Ollama instance and verify model availability.
+        Returns a dictionary with reachable and model_available flags.
+        """
+        endpoint = f"{self.base_url}/api/tags"
+        try:
+            async with httpx.AsyncClient(timeout=2.0) as client:
+                response = await client.get(endpoint)
+                if response.status_code == 200:
+                    data = response.json()
+                    models = [m.get("name", "") for m in data.get("models", [])]
+                    model_found = any(self.model in m or m in self.model for m in models)
+                    return {
+                        "reachable": True,
+                        "model_available": model_found,
+                        "models": models,
+                    }
+        except Exception as exc:
+            logger.info("Ollama health check probe failed or inactive: %s", exc)
+
+        return {
+            "reachable": False,
+            "model_available": False,
+            "models": [],
+        }
+
     # -------------------------------------------------------------------------
     # Shared Internal Generation Engine
     # -------------------------------------------------------------------------

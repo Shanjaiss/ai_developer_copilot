@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.routers import ai, repositories
+from app.routers import ai, repositories, productivity
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -66,3 +66,4 @@ def get_health() -> HealthResponse:
 # Mount feature routers
 app.include_router(ai.router, prefix="/api/v1")
 app.include_router(repositories.router, prefix="/api/v1")
+app.include_router(productivity.router, prefix="/api/v1")

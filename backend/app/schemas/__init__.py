@@ -62,6 +62,16 @@ from .documentation import (
     DocumentationRequest,
     DocumentationResponse,
 )
+from .productivity import (
+    TimeWindow,
+    EventOutcome,
+    MetricEvent,
+    ProductivitySummaryResponse,
+    FeatureUsageMetric,
+    PerformanceMetric,
+    RecentActivityItem,
+    ProductivityHealthResponse,
+)
 
 __all__ = [
     "BaseCodeRequest",
@@ -118,5 +128,13 @@ __all__ = [
     "DocumentationAssumption",
     "DocumentationRequest",
     "DocumentationResponse",
+    "TimeWindow",
+    "EventOutcome",
+    "MetricEvent",
+    "ProductivitySummaryResponse",
+    "FeatureUsageMetric",
+    "PerformanceMetric",
+    "RecentActivityItem",
+    "ProductivityHealthResponse",
 ]
 

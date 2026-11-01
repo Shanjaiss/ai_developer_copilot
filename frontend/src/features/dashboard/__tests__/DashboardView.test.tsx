@@ -121,6 +121,13 @@ describe('DashboardView Feature Integration', () => {
 
     renderWithClient(<DashboardView initialView="dashboard" />);
 
+    // Click Productivity tab
+    const prodTab = screen.getByRole('tab', { name: /Productivity/i });
+    fireEvent.click(prodTab);
+
+    // Productivity feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /Productivity Dashboard/i })).toBeInTheDocument();
+
     // Click AI Docs tab
     const docsTab = screen.getByRole('tab', { name: /AI Docs/i });
     fireEvent.click(docsTab);

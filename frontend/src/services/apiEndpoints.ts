@@ -25,6 +25,18 @@ export const API_ENDPOINTS = {
   AI_REFACTOR: '/api/v1/ai/refactor',
   /** AI documentation generator endpoint (Phase 10) */
   AI_GENERATE_DOCUMENTATION: '/api/v1/ai/generate-documentation',
+  /** Developer productivity summary endpoint (Phase 11) */
+  PRODUCTIVITY_SUMMARY: '/api/v1/productivity/summary',
+  /** Feature usage breakdown endpoint (Phase 11) */
+  PRODUCTIVITY_FEATURES: '/api/v1/productivity/features',
+  /** Performance timeline trend endpoint (Phase 11) */
+  PRODUCTIVITY_PERFORMANCE: '/api/v1/productivity/performance',
+  /** Recent telemetry activity stream endpoint (Phase 11) */
+  PRODUCTIVITY_ACTIVITY: '/api/v1/productivity/activity',
+  /** System and AI model health endpoint (Phase 11) */
+  PRODUCTIVITY_HEALTH: '/api/v1/productivity/health',
+  /** Clear telemetry metrics endpoint (Phase 11) */
+  PRODUCTIVITY_CLEAR: '/api/v1/productivity/clear',
   /** Approved repositories discovery endpoint (Phase 7) */
   REPOSITORIES: '/api/v1/repositories',
   /** Repository scan endpoint (Phase 7) */

@@ -6,3 +6,4 @@ export * from './repository';
 export * from './debugging';
 export * from './refactoring';
 export * from './documentation';
+export * from './productivity';

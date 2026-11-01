@@ -17,6 +17,7 @@ from app.services.repository_intelligence import (
     RepositoryIntelligenceService,
     repository_intelligence_service,
 )
+from app.services.metrics_service import track_operation
 
 router = APIRouter(
     prefix="/repositories",
@@ -103,10 +104,11 @@ async def ask_repository_question(
     service: RepositoryIntelligenceService = Depends(get_repo_service),
 ) -> RepositoryAskResponse:
     """Answers a question about the repository with grounded references."""
-    return await service.ask_repository_question(
-        repository_id=repository_id,
-        question=payload.question,
-        conversation=payload.conversation,
-        selected_paths=payload.selected_paths,
-    )
+    async with track_operation(feature="repository_intelligence", operation="ask_repository_question"):
+        return await service.ask_repository_question(
+            repository_id=repository_id,
+            question=payload.question,
+            conversation=payload.conversation,
+            selected_paths=payload.selected_paths,
+        )
 
