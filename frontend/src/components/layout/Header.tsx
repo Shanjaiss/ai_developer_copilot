@@ -39,7 +39,7 @@ export function Header({
         <div className="brand-info">
           <h1>
             AI Developer Copilot
-            <span className="brand-badge">Phase 11 • Productivity</span>
+            <span className="brand-badge">Phase 12 • Final Release</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
