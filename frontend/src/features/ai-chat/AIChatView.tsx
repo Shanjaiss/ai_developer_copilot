@@ -24,6 +24,7 @@ export function AIChatView() {
     reset: resetMutation,
   } = useCreateQuery<ChatResponse, ChatRequest>({
     url: API_ENDPOINTS.AI_CHAT,
+    timeout: 60000,
   });
 
   const handleSendMessage = useCallback(
@@ -31,10 +32,15 @@ export function AIChatView() {
       if (!text.trim() || isPending) return;
 
       const currentSessionId = sessionIdRef.current;
-      const historySnapshot = [...messages];
+      // If the last message in history was an unfulfilled failed turn, prune it
+      let baseMessages = messages;
+      if (lastFailedMessage && baseMessages.length > 0 && baseMessages[baseMessages.length - 1].role === 'user') {
+        baseMessages = baseMessages.slice(0, -1);
+      }
+      const historySnapshot = [...baseMessages];
       const newUserMessage: ChatMessage = { role: 'user', content: text.trim() };
 
-      setMessages((prev) => [...prev, newUserMessage]);
+      setMessages([...baseMessages, newUserMessage]);
       setLastFailedMessage(null);
       resetMutation();
 
@@ -65,7 +71,7 @@ export function AIChatView() {
         }
       );
     },
-    [messages, isPending, codeContext, contextLanguage, sendChatMessage, resetMutation]
+    [messages, isPending, codeContext, contextLanguage, lastFailedMessage, sendChatMessage, resetMutation]
   );
 
   const handleNewConversation = useCallback(() => {

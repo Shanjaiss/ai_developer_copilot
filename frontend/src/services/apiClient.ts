@@ -15,9 +15,19 @@ export function getApiBaseUrl(): string {
 }
 
 /**
- * Default timeout in milliseconds.
+ * Resolves the default request timeout from Vite environment or defaults to 60s
+ * to accommodate local Ollama LLM inference on consumer hardware.
  */
-const DEFAULT_TIMEOUT_MS = 15000;
+export function getApiTimeoutMs(): number {
+  const envTimeout = (import.meta.env.VITE_API_TIMEOUT_MS as string) || '';
+  const parsed = parseInt(envTimeout, 10);
+  return !isNaN(parsed) && parsed > 0 ? parsed : 60000;
+}
+
+/**
+ * Default timeout in milliseconds (aligned with backend OLLAMA_TIMEOUT_SECONDS = 60s).
+ */
+const DEFAULT_TIMEOUT_MS = getApiTimeoutMs();
 
 /**
  * Centralized Axios client instance configured for the application.

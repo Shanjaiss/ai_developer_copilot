@@ -15,6 +15,10 @@ export interface UseCreateQueryOptions<TData = unknown, TVariables = void, TErro
    */
   url: string | ((variables: TVariables) => string);
   /**
+   * Optional request timeout override in milliseconds.
+   */
+  timeout?: number;
+  /**
    * Optional query parameters to include with the request.
    */
   params?: QueryParams;
@@ -41,13 +45,14 @@ export function useCreateQuery<TData = unknown, TVariables = void, TError = ApiE
   options: UseCreateQueryOptions<TData, TVariables, TError>
 ): UseMutationResult<TData, TError, TVariables> {
   const queryClient = useQueryClient();
-  const { url, params, invalidateQueries, onSuccess, retry = 0, ...restOptions } = options;
+  const { url, params, timeout, invalidateQueries, onSuccess, retry = 0, ...restOptions } = options;
 
   return useMutation<TData, TError, TVariables>({
     mutationFn: async (variables: TVariables) => {
       const endpoint = typeof url === 'function' ? url(variables) : url;
       const response = await apiClient.post<TData>(endpoint, variables, {
         params,
+        ...(timeout !== undefined ? { timeout } : {}),
       });
       return response.data;
     },
