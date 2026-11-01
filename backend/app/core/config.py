@@ -5,6 +5,20 @@ import os
 from typing import List, Set, Dict
 from pathlib import Path
 
+try:
+    from dotenv import load_dotenv, find_dotenv
+    # Automatically discover and load .env from workspace or parent directories
+    _env_path = find_dotenv(usecwd=True)
+    if _env_path:
+        load_dotenv(_env_path)
+    else:
+        _fallback_env = Path(__file__).resolve().parent.parent.parent.parent / ".env"
+        if _fallback_env.is_file():
+            load_dotenv(_fallback_env)
+except ImportError:
+    pass
+
+
 
 class Settings:
     PROJECT_NAME: str = "AI Developer Copilot API"
@@ -76,6 +90,8 @@ class Settings:
         """
         import json
         raw = os.getenv("APPROVED_REPOSITORY_ROOTS", self.APPROVED_REPOSITORY_ROOTS).strip()
+        if (raw.startswith('"') and raw.endswith('"')) or (raw.startswith("'") and raw.endswith("'")):
+            raw = raw[1:-1].strip()
         if not raw:
             return {}
         repos: Dict[str, Path] = {}
@@ -84,25 +100,27 @@ class Settings:
                 parsed = json.loads(raw)
                 if isinstance(parsed, dict):
                     for k, v in parsed.items():
-                        p = Path(str(v)).resolve()
+                        clean_path = str(v).strip().strip("'\"")
+                        p = Path(clean_path).resolve()
                         if p.exists() and p.is_dir():
-                            repos[str(k).strip().lower()] = p
+                            clean_id = str(k).strip().strip("'\"").lower()
+                            repos[clean_id] = p
             except Exception:
                 pass
         else:
             for item in raw.split(","):
-                item = item.strip()
+                item = item.strip().strip("'\"")
                 if not item:
                     continue
                 sep = ":" if ":" in item else "="
                 if sep in item:
                     repo_id, path_str = item.split(sep, 1)
-                    repo_id = repo_id.strip().lower()
-                    p = Path(path_str.strip()).resolve()
+                    repo_id = repo_id.strip().strip("'\"").lower()
+                    p = Path(path_str.strip().strip("'\"")).resolve()
                     if p.exists() and p.is_dir():
                         repos[repo_id] = p
                 else:
-                    p = Path(item).resolve()
+                    p = Path(item.strip().strip("'\"")).resolve()
                     if p.exists() and p.is_dir():
                         repos[p.name.lower()] = p
         return repos
