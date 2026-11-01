@@ -22,12 +22,13 @@ Optimized for consumer hardware (Apple Silicon Mac M1 with 8GB unified memory), 
 
 ---
 
-## 🎥 Video Demonstration
+## 🎥 Watch the AI Developer Copilot Demo
 
-<!-- DEMO VIDEO PLACEHOLDER: Insert YouTube, Loom, or Vimeo walkthrough link below -->
-> 📺 **Demo Walkthrough Video**: `[Insert Loom / YouTube Walkthrough Link Here]`
-> 
-> *A 5-7 minute demonstration showcasing all 10 AI productivity engines, local Ollama pair programming, AST repository intelligence, and real-time SVG telemetry charts.*
+[![Watch the AI Developer Copilot Demo](https://img.youtube.com/vi/7HfoUBb7pDc/maxresdefault.jpg)](https://youtu.be/7HfoUBb7pDc)
+
+> 📺 **Direct YouTube Link**: [https://youtu.be/7HfoUBb7pDc](https://youtu.be/7HfoUBb7pDc)
+>
+> *This video is a recorded demonstration of AI Developer Copilot running 100% locally on an Apple Silicon Mac M1 (8GB unified memory). It demonstrates the complete end-to-end developer workflows across the React 19 frontend, FastAPI ASGI backend, and local Ollama (`qwen2.5-coder:1.5b`) model — including AI code explanation, AST-indexed repository intelligence, automated test generation, and real-time SVG telemetry. Please note that this video is a recorded demonstration of an on-device local development tool, not a publicly hosted interactive web application.*
 
 ---
 
