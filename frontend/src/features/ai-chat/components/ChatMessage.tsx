@@ -62,6 +62,8 @@ function renderSafeMessageContent(content: string) {
               color: '#f8fafc',
               overflowX: 'auto',
               whiteSpace: 'pre',
+              maxWidth: '100%',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             <code>{codeBody}</code>
@@ -72,7 +74,14 @@ function renderSafeMessageContent(content: string) {
 
     // Regular text paragraph
     return (
-      <span key={`text-part-${i}`} style={{ whiteSpace: 'pre-wrap' }}>
+      <span
+        key={`text-part-${i}`}
+        style={{
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+        }}
+      >
         {part}
       </span>
     );

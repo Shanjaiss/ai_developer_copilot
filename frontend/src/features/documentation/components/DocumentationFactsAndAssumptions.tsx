@@ -25,7 +25,7 @@ export function DocumentationFactsAndAssumptions({
   }
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '20px', marginBottom: '24px' }}>
       {/* 1. Statically Verified Facts */}
       {verifiedFacts.length > 0 && (
         <div className="card" data-testid="verified-facts-section" style={{ padding: '20px' }}>

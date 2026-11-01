@@ -311,7 +311,7 @@ export function DocumentationInputPanel({
         }}
       >
         {/* Document Configuration Controls */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))', gap: '16px', marginBottom: '16px' }}>
           {/* Target Documentation Type */}
           <div>
             <label
@@ -478,7 +478,7 @@ export function DocumentationInputPanel({
         )}
 
         {(mode === 'repository_readme' || mode === 'architecture_documentation' || mode === 'selected_file' || mode === 'api_documentation') && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '16px', marginBottom: '16px' }}>
             <div>
               <label
                 htmlFor="doc-repo-select"

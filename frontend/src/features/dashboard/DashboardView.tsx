@@ -3,6 +3,8 @@ import { useFetchQuery } from '../../hooks/api/useFetchQuery';
 import { getApiBaseUrl } from '../../services/apiClient';
 import { API_ENDPOINTS } from '../../services/apiEndpoints';
 import { Header, type ActiveView } from '../../components/layout/Header';
+import { Sidebar } from '../../components/layout/Sidebar';
+import { MobileNavDrawer } from '../../components/layout/MobileNavDrawer';
 import { Footer } from '../../components/layout/Footer';
 import { ErrorBanner } from '../../components/common/ErrorBanner';
 import { HeroBanner } from './components/HeroBanner';
@@ -27,6 +29,9 @@ export interface DashboardViewProps {
 
 export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps) {
   const [activeView, setActiveView] = useState<ActiveView>(initialView);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const mobileTriggerRef = useRef<HTMLButtonElement | null>(null);
+
   const apiBaseUrl = getApiBaseUrl();
   const fetchStartTime = useRef<number | null>(null);
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
@@ -79,18 +84,27 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
     await Promise.all([refetchHealth(), refetchWelcome()]);
   }, [refetchHealth, refetchWelcome]);
 
+  const handleCloseMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+    // Restore focus to trigger
+    mobileTriggerRef.current?.focus();
+  }, []);
+
   const lastCheckedDate = dataUpdatedAt ? new Date(dataUpdatedAt) : null;
   const isRefreshing = isHealthFetching;
 
   return (
     <div className="dashboard-container">
-      {/* Top Header Navigation with View Switcher */}
+      {/* Top Header Bar */}
       <Header
         connectionStatus={connectionStatus}
         isRefreshing={isRefreshing}
         onRefresh={handleRefresh}
         activeView={activeView}
         onViewChange={setActiveView}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onToggleMobileMenu={() => setIsMobileMenuOpen((prev) => !prev)}
+        triggerRef={mobileTriggerRef}
       />
 
       {/* Connection Failure Alert if offline */}
@@ -102,55 +116,69 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
         />
       )}
 
-      {/* Conditional View Rendering */}
-      {activeView === 'productivity' ? (
-        <ProductivityView />
-      ) : activeView === 'documentation' ? (
-        <DocumentationView />
-      ) : activeView === 'refactoring' ? (
-        <RefactoringView />
-      ) : activeView === 'debugging' ? (
-        <DebuggingView />
-      ) : activeView === 'repository-intelligence' ? (
-        <RepositoryIntelligenceView />
-      ) : activeView === 'chat' ? (
-        <AIChatView />
-      ) : activeView === 'test-generator' ? (
-        <TestGeneratorView />
-      ) : activeView === 'optimizer' ? (
-        <CodeOptimizerView />
-      ) : activeView === 'review' ? (
-        <CodeReviewView />
-      ) : activeView === 'explainer' ? (
-        <CodeExplainerView />
-      ) : (
-        <>
-          {/* Hero Project Banner */}
-          <HeroBanner
-            apiBaseUrl={apiBaseUrl}
-            latencyMs={latencyMs}
-            lastChecked={lastCheckedDate}
-            environment={healthData?.environment || 'development'}
-          />
+      {/* Mobile Navigation Drawer */}
+      <MobileNavDrawer
+        isOpen={isMobileMenuOpen}
+        activeView={activeView}
+        onSelectView={setActiveView}
+        onClose={handleCloseMobileMenu}
+      />
 
-          {/* Core Diagnostics & Verification Grid */}
-          <div className="dashboard-grid">
-            <TelemetryDiagnostics
-              healthData={healthData}
-              welcomeData={welcomeData}
-              connectionStatus={connectionStatus}
-              latencyMs={latencyMs}
-            />
+      {/* Responsive Application Shell: Desktop Sidebar + Main Content Area */}
+      <div className="app-layout-shell">
+        <Sidebar activeView={activeView} onViewChange={setActiveView} />
 
-            <ApiContractVerifier apiBaseUrl={apiBaseUrl} />
+        <main className="main-content-area" id="main-content-area">
+          {/* Conditional View Rendering */}
+          {activeView === 'productivity' ? (
+            <ProductivityView />
+          ) : activeView === 'documentation' ? (
+            <DocumentationView />
+          ) : activeView === 'refactoring' ? (
+            <RefactoringView />
+          ) : activeView === 'debugging' ? (
+            <DebuggingView />
+          ) : activeView === 'repository-intelligence' ? (
+            <RepositoryIntelligenceView />
+          ) : activeView === 'chat' ? (
+            <AIChatView />
+          ) : activeView === 'test-generator' ? (
+            <TestGeneratorView />
+          ) : activeView === 'optimizer' ? (
+            <CodeOptimizerView />
+          ) : activeView === 'review' ? (
+            <CodeReviewView />
+          ) : activeView === 'explainer' ? (
+            <CodeExplainerView />
+          ) : (
+            <>
+              {/* Hero Project Banner */}
+              <HeroBanner
+                apiBaseUrl={apiBaseUrl}
+                latencyMs={latencyMs}
+                lastChecked={lastCheckedDate}
+                environment={healthData?.environment || 'development'}
+              />
 
-            <TechStackMatrix />
-          </div>
-        </>
-      )}
+              {/* Core Diagnostics & Verification Grid */}
+              <div className="dashboard-grid">
+                <TelemetryDiagnostics
+                  healthData={healthData}
+                  welcomeData={welcomeData}
+                  connectionStatus={connectionStatus}
+                  latencyMs={latencyMs}
+                />
 
-      {/* Dashboard Footer */}
-      <Footer />
+                <ApiContractVerifier apiBaseUrl={apiBaseUrl} />
+
+                <TechStackMatrix />
+              </div>
+            </>
+          )}
+
+          <Footer />
+        </main>
+      </div>
     </div>
   );
 }

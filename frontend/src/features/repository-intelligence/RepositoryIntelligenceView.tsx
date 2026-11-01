@@ -249,14 +249,7 @@ export function RepositoryIntelligenceView() {
           )}
 
           {/* Two-column layout: Tree on Left, Q&A and Dependencies on Right */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'minmax(280px, 1fr) minmax(400px, 2fr)',
-              gap: '24px',
-              alignItems: 'start',
-            }}
-          >
+          <div className="repo-intelligence-layout">
             {/* Left Column: File Tree */}
             <div>
               <RepositoryFileTree

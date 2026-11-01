@@ -52,9 +52,12 @@ export function ChatInput({
         borderRadius: 'var(--radius-md)',
         padding: '12px 14px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: '10px', width: '100%' }}>
         <textarea
           ref={textareaRef}
           id="chat-message-input"
@@ -69,6 +72,8 @@ export function ChatInput({
           aria-label="Chat message input"
           style={{
             flex: 1,
+            minWidth: 0,
+            width: '100%',
             minHeight: '52px',
             maxHeight: '160px',
             resize: 'vertical',

@@ -1,8 +1,10 @@
+import { type FC, type RefObject } from 'react';
 import { StatusPill } from '../ui/StatusPill';
 import { Button } from '../ui/Button';
 import type { ConnectionStatus } from '../../types';
+import type { ActiveView } from './navigationItems';
 
-export type ActiveView = 'dashboard' | 'productivity' | 'documentation' | 'refactoring' | 'debugging' | 'repository-intelligence' | 'chat' | 'test-generator' | 'optimizer' | 'review' | 'explainer';
+export type { ActiveView } from './navigationItems';
 
 export interface HeaderProps {
   connectionStatus: ConnectionStatus;
@@ -10,18 +12,40 @@ export interface HeaderProps {
   onRefresh?: () => void;
   activeView?: ActiveView;
   onViewChange?: (view: ActiveView) => void;
+  isMobileMenuOpen?: boolean;
+  onToggleMobileMenu?: () => void;
+  triggerRef?: RefObject<HTMLButtonElement | null>;
 }
 
-export function Header({
+export const Header: FC<HeaderProps> = ({
   connectionStatus,
   isRefreshing = false,
   onRefresh,
-  activeView = 'chat',
-  onViewChange,
-}: HeaderProps) {
+  isMobileMenuOpen = false,
+  onToggleMobileMenu,
+  triggerRef,
+}) => {
   return (
-    <header className="header-nav">
+    <header className="header-nav" role="banner">
       <div className="brand-section">
+        {onToggleMobileMenu && (
+          <button
+            ref={triggerRef}
+            type="button"
+            id="mobile-nav-toggle-btn"
+            className="mobile-nav-toggle"
+            onClick={onToggleMobileMenu}
+            aria-label="Toggle navigation menu"
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-nav-drawer"
+            data-testid="mobile-nav-toggle"
+          >
+            <span className="hamburger-line" aria-hidden="true" />
+            <span className="hamburger-line" aria-hidden="true" />
+            <span className="hamburger-line" aria-hidden="true" />
+          </button>
+        )}
+
         <div className="brand-logo" aria-label="AI Developer Copilot Logo">
           <svg
             viewBox="0 0 24 24"
@@ -36,118 +60,15 @@ export function Header({
             <path d="M2 12l10 5 10-5" />
           </svg>
         </div>
+
         <div className="brand-info">
           <h1>
-            AI Developer Copilot
+            <span>AI Developer Copilot</span>
             <span className="brand-badge">Phase 12 • Final Release</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
       </div>
-
-      {onViewChange && (
-        <div className="view-tabs" role="tablist" aria-label="Feature navigation">
-          <button
-            id="tab-productivity"
-            role="tab"
-            aria-selected={activeView === 'productivity'}
-            className={`view-tab ${activeView === 'productivity' ? 'active' : ''}`}
-            onClick={() => onViewChange('productivity')}
-          >
-            <span>📈</span> Productivity
-          </button>
-          <button
-            id="tab-documentation"
-            role="tab"
-            aria-selected={activeView === 'documentation'}
-            className={`view-tab ${activeView === 'documentation' ? 'active' : ''}`}
-            onClick={() => onViewChange('documentation')}
-          >
-            <span>📖</span> AI Docs
-          </button>
-          <button
-            id="tab-refactoring"
-            role="tab"
-            aria-selected={activeView === 'refactoring'}
-            className={`view-tab ${activeView === 'refactoring' ? 'active' : ''}`}
-            onClick={() => onViewChange('refactoring')}
-          >
-            <span>🔄</span> AI Refactor
-          </button>
-          <button
-            id="tab-debugging"
-            role="tab"
-            aria-selected={activeView === 'debugging'}
-            className={`view-tab ${activeView === 'debugging' ? 'active' : ''}`}
-            onClick={() => onViewChange('debugging')}
-          >
-            <span>🐛</span> AI Debugger
-          </button>
-          <button
-            id="tab-repo-intelligence"
-            role="tab"
-            aria-selected={activeView === 'repository-intelligence'}
-            className={`view-tab ${activeView === 'repository-intelligence' ? 'active' : ''}`}
-            onClick={() => onViewChange('repository-intelligence')}
-          >
-            <span>🧠</span> Repo Intelligence
-          </button>
-          <button
-            id="tab-ai-chat"
-            role="tab"
-            aria-selected={activeView === 'chat'}
-            className={`view-tab ${activeView === 'chat' ? 'active' : ''}`}
-            onClick={() => onViewChange('chat')}
-          >
-            <span>💬</span> AI Chat
-          </button>
-          <button
-            id="tab-test-generator"
-            role="tab"
-            aria-selected={activeView === 'test-generator'}
-            className={`view-tab ${activeView === 'test-generator' ? 'active' : ''}`}
-            onClick={() => onViewChange('test-generator')}
-          >
-            <span>🧪</span> AI Test Generator
-          </button>
-          <button
-            id="tab-code-optimizer"
-            role="tab"
-            aria-selected={activeView === 'optimizer'}
-            className={`view-tab ${activeView === 'optimizer' ? 'active' : ''}`}
-            onClick={() => onViewChange('optimizer')}
-          >
-            <span>🚀</span> AI Code Optimizer
-          </button>
-          <button
-            id="tab-code-review"
-            role="tab"
-            aria-selected={activeView === 'review'}
-            className={`view-tab ${activeView === 'review' ? 'active' : ''}`}
-            onClick={() => onViewChange('review')}
-          >
-            <span>🛡️</span> AI Code Review
-          </button>
-          <button
-            id="tab-code-explainer"
-            role="tab"
-            aria-selected={activeView === 'explainer'}
-            className={`view-tab ${activeView === 'explainer' ? 'active' : ''}`}
-            onClick={() => onViewChange('explainer')}
-          >
-            <span>⚡</span> AI Code Explainer
-          </button>
-          <button
-            id="tab-dashboard"
-            role="tab"
-            aria-selected={activeView === 'dashboard'}
-            className={`view-tab ${activeView === 'dashboard' ? 'active' : ''}`}
-            onClick={() => onViewChange('dashboard')}
-          >
-            <span>📊</span> System Dashboard
-          </button>
-        </div>
-      )}
 
       <div className="nav-actions">
         <StatusPill status={connectionStatus} />
@@ -166,6 +87,6 @@ export function Header({
       </div>
     </header>
   );
-}
+};
 
 export default Header;

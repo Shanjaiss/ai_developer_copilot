@@ -247,7 +247,7 @@ export function RefactoringInputPanel({
         {mode === 'pasted_code' ? (
           <>
             {/* Language & Goal Row */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '16px', marginBottom: '16px' }}>
               <div>
                 <label
                   htmlFor="refactor-language-select"
@@ -345,7 +345,7 @@ export function RefactoringInputPanel({
         ) : (
           <>
             {/* Repository Mode Inputs */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '16px', marginBottom: '16px' }}>
               <div>
                 <label
                   htmlFor="refactor-repo-select"

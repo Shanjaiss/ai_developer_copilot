@@ -188,7 +188,7 @@ export function ErrorInputPanel({
         </div>
 
         {/* Configuration Row: Language & Repository */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '16px', marginBottom: '16px' }}>
           <div>
             <label
               htmlFor="debug-language-select"
@@ -281,7 +281,7 @@ export function ErrorInputPanel({
         </div>
 
         {showAdvanced && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px', marginBottom: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '16px', marginBottom: '20px' }}>
             <div>
               <label
                 htmlFor="debug-stack-trace"

@@ -100,7 +100,7 @@ export function RepositoryDependencyViewer({
           Could not load dependencies: {error.message}
         </div>
       ) : dependencies ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))', gap: '16px' }}>
           {/* Local Dependencies */}
           <div
             style={{

@@ -38,17 +38,20 @@ export function ChatConversation({
 
   return (
     <div
-      className="card"
+      className="card chat-conversation-card"
       style={{
         flex: 1,
-        minHeight: '380px',
-        maxHeight: '620px',
+        minHeight: '280px',
+        maxHeight: 'clamp(320px, 58vh, 620px)',
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         padding: '16px 20px',
         marginBottom: '14px',
         background: 'rgba(15, 23, 42, 0.55)',
+        boxSizing: 'border-box',
+        width: '100%',
+        minWidth: 0,
       }}
     >
       {/* Context Truncation Warning */}
