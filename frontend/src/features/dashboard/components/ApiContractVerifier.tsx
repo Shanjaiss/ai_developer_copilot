@@ -19,7 +19,7 @@ export function ApiContractVerifier({ apiBaseUrl }: ApiContractVerifierProps) {
             fontFamily: 'var(--font-mono)',
           }}
         >
-          Day 1 Scope
+          Verified Contracts
         </span>
       }
     >

@@ -16,12 +16,12 @@ export function HeroBanner({
   return (
     <section className="hero-banner">
       <div className="hero-content">
-        <span className="hero-tag">System Phase 1 • Initialization Complete</span>
-        <h2>AI Developer Copilot Core Architecture</h2>
+        <span className="hero-tag">12-Phase Development Project • Complete Full-Stack Release</span>
+        <h2>AI Developer Copilot Engineering Platform</h2>
         <p>
-          A production-ready full-stack portfolio workspace uniting modern client-side rendering with high-throughput
-          asynchronous Python web services. Structured for extensibility into Generative AI, Retrieval-Augmented
-          Generation (RAG), and containerized cloud deployment.
+          A local-first, privacy-focused developer copilot and codebase intelligence platform. Unites a responsive
+          React 19 single-page application with high-throughput asynchronous FastAPI microservices and on-device
+          Ollama LLM inference (Qwen2.5-Coder 1.5B).
         </p>
 
         <div className="hero-meta-strip">

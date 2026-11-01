@@ -4,7 +4,7 @@ export function TechStackMatrix() {
   return (
     <Card
       span={12}
-      title="Portfolio Technology Matrix (Active & Future Phases)"
+      title="Technology Stack & Future Roadmap"
       icon="🛠️"
       headerAction={
         <span
@@ -14,7 +14,7 @@ export function TechStackMatrix() {
             fontWeight: 600,
           }}
         >
-          ● GENERIC CRUD ARCHITECTURE OPERATIONAL
+          ● 12-PHASE ARCHITECTURE OPERATIONAL
         </span>
       }
     >
@@ -23,7 +23,7 @@ export function TechStackMatrix() {
           <div className="stack-title">Frontend Tier</div>
           <div className="stack-tech">React 19 + TypeScript + Vite</div>
           <div className="stack-detail">
-            TanStack Query v5 + Axios centralized generic CRUD hooks, glassmorphism design tokens.
+            TanStack Query v5 + Axios centralized generic hooks, responsive design tokens, and zero-dependency SVG charts.
           </div>
         </div>
 
@@ -31,7 +31,15 @@ export function TechStackMatrix() {
           <div className="stack-title">Backend Tier</div>
           <div className="stack-tech">FastAPI + Uvicorn + Pydantic v2</div>
           <div className="stack-detail">
-            Asynchronous ASGI pipeline, CORS origin security, and typed JSON schemas.
+            Asynchronous ASGI pipeline, CORS origin security, typed JSON schemas, and path traversal security guards.
+          </div>
+        </div>
+
+        <div className="stack-card">
+          <div className="stack-title">AI & Intelligence Tier</div>
+          <div className="stack-tech">Local Ollama + Qwen2.5-Coder 1.5B</div>
+          <div className="stack-detail">
+            On-device LLM inference, AST dependency analysis, bounded multi-file context, and zero cloud data leakage.
           </div>
         </div>
 
@@ -39,15 +47,15 @@ export function TechStackMatrix() {
           <div className="stack-title">Quality Assurance</div>
           <div className="stack-tech">Pytest, Vitest & Strict TS</div>
           <div className="stack-detail">
-            Automated unit, integration, and cancellation testing with mock networks.
+            190 backend pytest tests, 125 frontend Vitest tests, and Oxlint static analysis with zero warnings.
           </div>
         </div>
 
-        <div className="stack-card" style={{ opacity: 0.7 }}>
-          <div className="stack-title">Upcoming Phase 2+</div>
-          <div className="stack-tech">PostgreSQL + Local LLM + RAG</div>
+        <div className="stack-card" style={{ opacity: 0.85 }}>
+          <div className="stack-title">Future Enhancements</div>
+          <div className="stack-tech">PostgreSQL + Advanced RAG + Docker</div>
           <div className="stack-detail">
-            Vector store embeddings, conversational AI copilot, and Docker orchestration.
+            Persistent telemetry storage in PostgreSQL, vector embeddings for larger codebases, and multi-container Docker deployment.
           </div>
         </div>
       </div>
