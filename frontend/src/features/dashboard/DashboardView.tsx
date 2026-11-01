@@ -16,6 +16,8 @@ import { TestGeneratorView } from '../test-generator/TestGeneratorView';
 import { AIChatView } from '../ai-chat/AIChatView';
 import { RepositoryIntelligenceView } from '../repository-intelligence/RepositoryIntelligenceView';
 import { DebuggingView } from '../debugging/DebuggingView';
+import { RefactoringView } from '../refactoring/RefactoringView';
+import { DocumentationView } from '../documentation/DocumentationView';
 import type { ConnectionStatus, HealthResponse, WelcomeResponse } from '../../types';
 
 export interface DashboardViewProps {
@@ -100,7 +102,11 @@ export function DashboardView({ initialView = 'dashboard' }: DashboardViewProps)
       )}
 
       {/* Conditional View Rendering */}
-      {activeView === 'debugging' ? (
+      {activeView === 'documentation' ? (
+        <DocumentationView />
+      ) : activeView === 'refactoring' ? (
+        <RefactoringView />
+      ) : activeView === 'debugging' ? (
         <DebuggingView />
       ) : activeView === 'repository-intelligence' ? (
         <RepositoryIntelligenceView />

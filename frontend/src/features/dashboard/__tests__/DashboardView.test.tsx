@@ -121,6 +121,20 @@ describe('DashboardView Feature Integration', () => {
 
     renderWithClient(<DashboardView initialView="dashboard" />);
 
+    // Click AI Docs tab
+    const docsTab = screen.getByRole('tab', { name: /AI Docs/i });
+    fireEvent.click(docsTab);
+
+    // AI Docs feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /AI Documentation Generator/i })).toBeInTheDocument();
+
+    // Click AI Refactor tab
+    const refactorTab = screen.getByRole('tab', { name: /AI Refactor/i });
+    fireEvent.click(refactorTab);
+
+    // AI Refactor feature heading should appear
+    expect(screen.getByRole('heading', { level: 2, name: /AI Code Refactoring Assistant/i })).toBeInTheDocument();
+
     // Click AI Debugger tab
     const debugTab = screen.getByRole('tab', { name: /AI Debugger/i });
     fireEvent.click(debugTab);

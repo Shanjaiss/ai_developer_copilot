@@ -15,8 +15,18 @@ from app.schemas.debugging import (
     DebugRequest,
     DebugResponse,
 )
+from app.schemas.refactoring import (
+    RefactorRequest,
+    RefactorResponse,
+)
+from app.schemas.documentation import (
+    DocumentationRequest,
+    DocumentationResponse,
+)
 from app.services.ollama_service import OllamaService, ollama_service
 from app.services.debugging_service import DebuggingService, debugging_service
+from app.services.refactoring_service import RefactoringService, refactoring_service
+from app.services.documentation_service import DocumentationService, documentation_service
 
 router = APIRouter(prefix="/ai", tags=["AI Code Engine"])
 
@@ -29,6 +39,16 @@ def get_ollama_service() -> OllamaService:
 def get_debugging_service() -> DebuggingService:
     """Dependency injection provider for DebuggingService."""
     return debugging_service
+
+
+def get_refactoring_service() -> RefactoringService:
+    """Dependency injection provider for RefactoringService."""
+    return refactoring_service
+
+
+def get_documentation_service() -> DocumentationService:
+    """Dependency injection provider for DocumentationService."""
+    return documentation_service
 
 
 @router.post(
@@ -151,6 +171,45 @@ async def debug_code(
     Analyzes error messages and stack traces. Never executes code.
     """
     return await service.debug_error(payload=payload)
+
+
+@router.post(
+    "/refactor",
+    response_model=RefactorResponse,
+    status_code=status.HTTP_200_OK,
+    summary="AI Code Refactoring Assistant",
+    description="Detects code smells, generates safe refactoring suggestions with before/after diffs, and evaluates cross-file impact.",
+)
+async def refactor_code(
+    payload: RefactorRequest,
+    service: RefactoringService = Depends(get_refactoring_service),
+) -> RefactorResponse:
+    """
+    Endpoint for AI code refactoring assistant.
+    Analyzes code maintainability and produces diffs. Never executes code or modifies repository files.
+    """
+    return await service.refactor_code(payload=payload)
+
+
+@router.post(
+    "/generate-documentation",
+    response_model=DocumentationResponse,
+    status_code=status.HTTP_200_OK,
+    summary="AI Documentation Generator",
+    description="Generates accurate, developer-friendly documentation from pasted code or approved repository content.",
+)
+async def generate_documentation(
+    payload: DocumentationRequest,
+    service: DocumentationService = Depends(get_documentation_service),
+) -> DocumentationResponse:
+    """
+    Endpoint for AI documentation generator.
+    Generates technical READMEs, API docs, code docs, and architecture summaries.
+    Never modifies repository files or executes code.
+    """
+    return await service.generate_documentation(payload=payload)
+
+
 
 
 

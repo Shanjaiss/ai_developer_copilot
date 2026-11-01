@@ -21,6 +21,10 @@ export const API_ENDPOINTS = {
   AI_CHAT: '/api/v1/ai/chat',
   /** AI bug detection and debugging assistant endpoint (Phase 8) */
   AI_DEBUG: '/api/v1/ai/debug',
+  /** AI code refactoring assistant endpoint (Phase 9) */
+  AI_REFACTOR: '/api/v1/ai/refactor',
+  /** AI documentation generator endpoint (Phase 10) */
+  AI_GENERATE_DOCUMENTATION: '/api/v1/ai/generate-documentation',
   /** Approved repositories discovery endpoint (Phase 7) */
   REPOSITORIES: '/api/v1/repositories',
   /** Repository scan endpoint (Phase 7) */

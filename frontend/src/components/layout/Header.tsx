@@ -2,7 +2,7 @@ import { StatusPill } from '../ui/StatusPill';
 import { Button } from '../ui/Button';
 import type { ConnectionStatus } from '../../types';
 
-export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator' | 'chat' | 'repository-intelligence' | 'debugging';
+export type ActiveView = 'dashboard' | 'explainer' | 'review' | 'optimizer' | 'test-generator' | 'chat' | 'repository-intelligence' | 'debugging' | 'refactoring' | 'documentation';
 
 export interface HeaderProps {
   connectionStatus: ConnectionStatus;
@@ -39,7 +39,7 @@ export function Header({
         <div className="brand-info">
           <h1>
             AI Developer Copilot
-            <span className="brand-badge">Phase 8 • AI Debugger</span>
+            <span className="brand-badge">Phase 10 • AI Docs</span>
           </h1>
           <p>Production Full-Stack &amp; AI Engineering Workspace</p>
         </div>
@@ -47,6 +47,24 @@ export function Header({
 
       {onViewChange && (
         <div className="view-tabs" role="tablist" aria-label="Feature navigation">
+          <button
+            id="tab-documentation"
+            role="tab"
+            aria-selected={activeView === 'documentation'}
+            className={`view-tab ${activeView === 'documentation' ? 'active' : ''}`}
+            onClick={() => onViewChange('documentation')}
+          >
+            <span>📖</span> AI Docs
+          </button>
+          <button
+            id="tab-refactoring"
+            role="tab"
+            aria-selected={activeView === 'refactoring'}
+            className={`view-tab ${activeView === 'refactoring' ? 'active' : ''}`}
+            onClick={() => onViewChange('refactoring')}
+          >
+            <span>🔄</span> AI Refactor
+          </button>
           <button
             id="tab-debugging"
             role="tab"

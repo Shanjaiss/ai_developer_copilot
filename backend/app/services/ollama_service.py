@@ -53,6 +53,7 @@ class OllamaService:
             "options": {
                 "temperature": temperature,
                 "top_p": 0.9,
+                "repeat_penalty": 1.1,
             },
         }
 
@@ -729,6 +730,7 @@ class OllamaService:
             "options": {
                 "temperature": temperature,
                 "top_p": 0.9,
+                "repeat_penalty": 1.1,
             },
         }
 

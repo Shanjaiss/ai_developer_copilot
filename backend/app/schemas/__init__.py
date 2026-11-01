@@ -43,6 +43,25 @@ from .debugging import (
     DebugRequest,
     DebugResponse,
 )
+from .refactoring import (
+    CodeSmell,
+    RefactoringSuggestion,
+    RefactoringChatMessage,
+    CrossFileImpact,
+    RefactorRequest,
+    RefactorResponse,
+)
+from .documentation import (
+    DocumentationType,
+    DocumentationMode,
+    DocumentationAudience,
+    DocumentationDetailLevel,
+    DocumentationSourceReference,
+    DocumentationVerifiedFact,
+    DocumentationAssumption,
+    DocumentationRequest,
+    DocumentationResponse,
+)
 
 __all__ = [
     "BaseCodeRequest",
@@ -84,5 +103,20 @@ __all__ = [
     "DebugChatMessage",
     "DebugRequest",
     "DebugResponse",
+    "CodeSmell",
+    "RefactoringSuggestion",
+    "RefactoringChatMessage",
+    "CrossFileImpact",
+    "RefactorRequest",
+    "RefactorResponse",
+    "DocumentationType",
+    "DocumentationMode",
+    "DocumentationAudience",
+    "DocumentationDetailLevel",
+    "DocumentationSourceReference",
+    "DocumentationVerifiedFact",
+    "DocumentationAssumption",
+    "DocumentationRequest",
+    "DocumentationResponse",
 ]
 

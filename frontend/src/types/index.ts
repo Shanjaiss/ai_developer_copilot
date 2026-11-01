@@ -4,3 +4,5 @@ export * from './welcome';
 export * from './ai';
 export * from './repository';
 export * from './debugging';
+export * from './refactoring';
+export * from './documentation';
